@@ -46,7 +46,7 @@ font_info :: struct #ordered {
 MAX_STRING_LEN :: 40000;
 font : font_info;
 
-// reading my arbitrary, pre-packed binary font file
+// reading my arbitrary, pre-packed binary font file, as a substitute for stb_truetype.h
 // the first 32 bytes are font global information, 
 // then the next num_glyphs*sizeof(stbtt_packedchar) bytes are per-glyph info
 // the finally the last widht*height bytes is the bitmap, uncompressed. 
@@ -74,13 +74,13 @@ get_font :: proc(filename: string) -> bool {
 
 init :: proc(vs_filename, fs_filename: string) -> bool{
 
-    if !get_font("extra/font.bin") {
+    if !get_font("font.bin") {
         fmt.println("Error, could not read font file");
         return false;
     }
     //defer free(info.cdata);  // @NOTE: Memoery leek? Freed on program exit anyway?
     //defer free(info.bitmap);
-    
+
     success: bool;
     font.program, success = load_shaders(vs_filename, fs_filename);
     if !success {
