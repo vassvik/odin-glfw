@@ -81,78 +81,79 @@ BlendEquationSeparate:    proc(modeRGB, modeAlpha: u32) #cc_c;
 
 
 init :: proc() {
-	set_proc_address :: proc(p: rawptr, name: string) #inline { (cast(^(proc() #cc_c))p)^ = glfw.GetProcAddress(^name[0]); }
+	//set_proc_address :: proc(p: rawptr, name: string) #inline { (cast(^(proc() #cc_c))p)^ = glfw.GetProcAddress(^name[0]); }
+	set_proc_address :: proc(p: rawptr, name: string) #inline { (^(proc() #cc_c))(p)^ = glfw.GetProcAddress(&name[0]); }
 	
-	set_proc_address(^ClearColor,              "glClearColor\x00");
-	set_proc_address(^Clear,                   "glClear\x00");
+	set_proc_address(&ClearColor,              "glClearColor\x00");
+	set_proc_address(&Clear,                   "glClear\x00");
 
-	set_proc_address(^GenTextures,             "glGenTextures\x00");
-	set_proc_address(^BindTexture,             "glBindTexture\x00");
-	set_proc_address(^TexParameteri,           "glTexParameteri\x00");
-	set_proc_address(^TexImage1D,              "glTexImage1D\x00");
-	set_proc_address(^TexImage2D,              "glTexImage2D\x00");
+	set_proc_address(&GenTextures,             "glGenTextures\x00");
+	set_proc_address(&BindTexture,             "glBindTexture\x00");
+	set_proc_address(&TexParameteri,           "glTexParameteri\x00");
+	set_proc_address(&TexImage1D,              "glTexImage1D\x00");
+	set_proc_address(&TexImage2D,              "glTexImage2D\x00");
 
-	set_proc_address(^GenBuffers,              "glGenBuffers\x00");
-	set_proc_address(^GenVertexArrays,         "glGenVertexArrays\x00");
-	set_proc_address(^GenSamplers,             "glGenSamplers\x00");
-	set_proc_address(^BindBuffer,              "glBindBuffer\x00");
-	set_proc_address(^BindSampler,             "glBindSampler\x00");
-	set_proc_address(^BindVertexArray,         "glBindVertexArray\x00");
-	set_proc_address(^BufferData,              "glBufferData\x00");
-	set_proc_address(^BufferSubData,           "glBufferSubData\x00");
+	set_proc_address(&GenBuffers,              "glGenBuffers\x00");
+	set_proc_address(&GenVertexArrays,         "glGenVertexArrays\x00");
+	set_proc_address(&GenSamplers,             "glGenSamplers\x00");
+	set_proc_address(&BindBuffer,              "glBindBuffer\x00");
+	set_proc_address(&BindSampler,             "glBindSampler\x00");
+	set_proc_address(&BindVertexArray,         "glBindVertexArray\x00");
+	set_proc_address(&BufferData,              "glBufferData\x00");
+	set_proc_address(&BufferSubData,           "glBufferSubData\x00");
 
-	set_proc_address(^DrawArrays,              "glDrawArrays\x00");
-	set_proc_address(^DrawElements,            "glDrawElements\x00");
+	set_proc_address(&DrawArrays,              "glDrawArrays\x00");
+	set_proc_address(&DrawElements,            "glDrawElements\x00");
 
-	set_proc_address(^MapBuffer,               "glMapBuffer\x00");
-	set_proc_address(^UnmapBuffer,             "glUnmapBuffer\x00");
+	set_proc_address(&MapBuffer,               "glMapBuffer\x00");
+	set_proc_address(&UnmapBuffer,             "glUnmapBuffer\x00");
 
-	set_proc_address(^VertexAttribPointer,     "glVertexAttribPointer\x00");
-	set_proc_address(^EnableVertexAttribArray, "glEnableVertexAttribArray\x00");
+	set_proc_address(&VertexAttribPointer,     "glVertexAttribPointer\x00");
+	set_proc_address(&EnableVertexAttribArray, "glEnableVertexAttribArray\x00");
 
-	set_proc_address(^CreateShader,            "glCreateShader\x00");
-	set_proc_address(^ShaderSource,            "glShaderSource\x00");
-	set_proc_address(^CompileShader,           "glCompileShader\x00");
-	set_proc_address(^CreateProgram,           "glCreateProgram\x00");
-	set_proc_address(^AttachShader,            "glAttachShader\x00");
-	set_proc_address(^DetachShader,            "glDetachShader\x00");
-	set_proc_address(^DeleteShader,            "glDeleteShader\x00");
-	set_proc_address(^LinkProgram,             "glLinkProgram\x00");
-	set_proc_address(^UseProgram,              "glUseProgram\x00");
-	set_proc_address(^DeleteProgram,           "glDeleteProgram\x00");
+	set_proc_address(&CreateShader,            "glCreateShader\x00");
+	set_proc_address(&ShaderSource,            "glShaderSource\x00");
+	set_proc_address(&CompileShader,           "glCompileShader\x00");
+	set_proc_address(&CreateProgram,           "glCreateProgram\x00");
+	set_proc_address(&AttachShader,            "glAttachShader\x00");
+	set_proc_address(&DetachShader,            "glDetachShader\x00");
+	set_proc_address(&DeleteShader,            "glDeleteShader\x00");
+	set_proc_address(&LinkProgram,             "glLinkProgram\x00");
+	set_proc_address(&UseProgram,              "glUseProgram\x00");
+	set_proc_address(&DeleteProgram,           "glDeleteProgram\x00");
 
-	set_proc_address(^GetShaderiv,             "glGetShaderiv\x00");
-	set_proc_address(^GetProgramiv,            "glGetProgramiv\x00");
-	set_proc_address(^GetShaderInfoLog,        "glGetShaderInfoLog\x00");
-	set_proc_address(^GetProgramInfoLog,       "glGetProgramInfoLog\x00");
+	set_proc_address(&GetShaderiv,             "glGetShaderiv\x00");
+	set_proc_address(&GetProgramiv,            "glGetProgramiv\x00");
+	set_proc_address(&GetShaderInfoLog,        "glGetShaderInfoLog\x00");
+	set_proc_address(&GetProgramInfoLog,       "glGetProgramInfoLog\x00");
 
-	set_proc_address(^ActiveTexture,           "glActiveTexture\x00");
-	set_proc_address(^GenerateMipmap,          "glGenerateMipmap\x00");
+	set_proc_address(&ActiveTexture,           "glActiveTexture\x00");
+	set_proc_address(&GenerateMipmap,          "glGenerateMipmap\x00");
 
-	set_proc_address(^Uniform1i,               "glUniform1i\x00");
-	set_proc_address(^Uniform1f,               "glUniform1f\x00");
-	set_proc_address(^Uniform2f,               "glUniform2f\x00");
-	set_proc_address(^Uniform3f,               "glUniform3f\x00");
-	set_proc_address(^UniformMatrix4fv,        "glUniformMatrix4fv\x00");
+	set_proc_address(&Uniform1i,               "glUniform1i\x00");
+	set_proc_address(&Uniform1f,               "glUniform1f\x00");
+	set_proc_address(&Uniform2f,               "glUniform2f\x00");
+	set_proc_address(&Uniform3f,               "glUniform3f\x00");
+	set_proc_address(&UniformMatrix4fv,        "glUniformMatrix4fv\x00");
 
-	set_proc_address(^GetUniformLocation,      "glGetUniformLocation\x00");
+	set_proc_address(&GetUniformLocation,      "glGetUniformLocation\x00");
 
-	set_proc_address(^SamplerParameteri,       "glSamplerParameteri\x00");
-	set_proc_address(^SamplerParameterf,       "glSamplerParameterf\x00");
-	set_proc_address(^SamplerParameteriv,      "glSamplerParameteriv\x00");
-	set_proc_address(^SamplerParameterfv,      "glSamplerParameterfv\x00");
-	set_proc_address(^SamplerParameterIiv,     "glSamplerParameterIiv\x00");
-	set_proc_address(^SamplerParameterIuiv,    "glSamplerParameterIuiv\x00");
+	set_proc_address(&SamplerParameteri,       "glSamplerParameteri\x00");
+	set_proc_address(&SamplerParameterf,       "glSamplerParameterf\x00");
+	set_proc_address(&SamplerParameteriv,      "glSamplerParameteriv\x00");
+	set_proc_address(&SamplerParameterfv,      "glSamplerParameterfv\x00");
+	set_proc_address(&SamplerParameterIiv,     "glSamplerParameterIiv\x00");
+	set_proc_address(&SamplerParameterIuiv,    "glSamplerParameterIuiv\x00");
 
-	set_proc_address(^VertexAttribDivisor,     "glVertexAttribDivisor\x00");
-	set_proc_address(^GetIntegerv,             "glGetIntegerv\x00");
-	set_proc_address(^IsEnabled,               "glIsEnabled\x00");
-	set_proc_address(^BlendEquation,           "glBlendEquation\x00");
-	set_proc_address(^BlendFunc,               "glBlendFunc\x00");
-	set_proc_address(^Disable,                 "glDisable\x00");
-	set_proc_address(^Enable,                  "glEnable\x00");
-	set_proc_address(^DrawArraysInstanced,     "glDrawArraysInstanced\x00");
-	set_proc_address(^BlendEquationSeparate,   "glBlendEquationSeparate\x00");
+	set_proc_address(&VertexAttribDivisor,     "glVertexAttribDivisor\x00");
+	set_proc_address(&GetIntegerv,             "glGetIntegerv\x00");
+	set_proc_address(&IsEnabled,               "glIsEnabled\x00");
+	set_proc_address(&BlendEquation,           "glBlendEquation\x00");
+	set_proc_address(&BlendFunc,               "glBlendFunc\x00");
+	set_proc_address(&Disable,                 "glDisable\x00");
+	set_proc_address(&Enable,                  "glEnable\x00");
+	set_proc_address(&DrawArraysInstanced,     "glDrawArraysInstanced\x00");
+	set_proc_address(&BlendEquationSeparate,   "glBlendEquationSeparate\x00");
 }
 
 // Helper for loading shaders into a program
@@ -168,15 +169,15 @@ load_shaders :: proc(vertex_shader_filename, fragment_shader_filename: string) -
                         iv_func: proc(u32, i32, ^i32) #cc_c, 
                         log_func: proc(u32, u32, ^u32, ^byte) #cc_c) -> (bool) {
         result, info_log_length : i32;
-        iv_func(id, status, ^result);
-        iv_func(id, INFO_LOG_LENGTH, ^info_log_length);
+        iv_func(id, status, &result);
+        iv_func(id, INFO_LOG_LENGTH, &info_log_length);
 
         if result == 0 {
             error_message := make([]byte, info_log_length);
             defer free(error_message);
 
-            log_func(id, cast(u32)info_log_length, nil, ^error_message[0]);
-            fmt.printf(cast(string)error_message[0..<len(error_message)-1]); 
+            log_func(id, u32(info_log_length), nil, &error_message[0]);
+            fmt.printf(string(error_message[0..<len(error_message)-1])); 
 
             return true;
         }
@@ -194,7 +195,7 @@ load_shaders :: proc(vertex_shader_filename, fragment_shader_filename: string) -
         defer free(shader_code);
 
         shader_id := CreateShader(shader_type);
-        ShaderSource(shader_id, 1, cast(^^byte)^shader_code, nil);
+        ShaderSource(shader_id, 1, ^^byte(&shader_code), nil);
         CompileShader(shader_id);
 
         if (check_error(shader_id, COMPILE_STATUS, GetShaderiv, GetShaderInfoLog)) {

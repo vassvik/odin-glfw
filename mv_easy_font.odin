@@ -3,18 +3,18 @@
 #import "fmt.odin";
 
 GetUniformLocation_ :: proc(program: u32, str: string) -> i32 {
-    return gl.GetUniformLocation(program, ^str[0]);;
+    return gl.GetUniformLocation(program, &str[0]);;
 }
 
 // from stb_truetype.h, which was used to create and pack the bitmap
-stbtt_packedchar :: struct #ordered {
+stbtt_packedchar :: struct {
     x0, y0, x1, y1: u16,
     xoff, yoff:     f32,
     xadvance:       f32,
     xoff2, yoff2:   f32,
 };
 
-font_info :: struct #ordered {
+font_info :: struct {
 	// stuff from file font.bin
     height:           i32,
     width:            i32,
@@ -58,7 +58,7 @@ get_font :: proc(filename: string) -> bool {
         return false;
     }
 
-    data := slice_ptr(cast(^byte)^font, 32);
+    data := slice_ptr(^byte(&font), 32);
     copy(data, font_data);
 
     font.cdata = make([]stbtt_packedchar, font.num_glyphs);
@@ -66,7 +66,7 @@ get_font :: proc(filename: string) -> bool {
     copy(slice_to_bytes(font.cdata), font_data[32..<(bytes_of_cdata+32)]);
     
     font.bitmap = make([]byte, font.width*font.height);
-    start_of_bitmap := cast(i32)len(font_data) - font.width*font.height;
+    start_of_bitmap := i32(len(font_data)) - font.width*font.height;
     copy(font.bitmap, font_data[start_of_bitmap..]);
 
     return true;
@@ -88,7 +88,7 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
     	return false;
     }
 
-    gl.GenVertexArrays(1, ^font.vao);
+    gl.GenVertexArrays(1, &font.vao);
     gl.BindVertexArray(font.vao);
 
     // Create and define quad used for each glyph, just a rectangle of side length 1
@@ -101,9 +101,9 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
         1.0, 1.0
     };
 
-    gl.GenBuffers(1, ^font.vbo_quad);
+    gl.GenBuffers(1, &font.vbo_quad);
     gl.BindBuffer(gl.ARRAY_BUFFER, font.vbo_quad);
-    gl.BufferData(gl.ARRAY_BUFFER, 4*12, ^v[0], gl.STATIC_DRAW);
+    gl.BufferData(gl.ARRAY_BUFFER, 4*12, &v[0], gl.STATIC_DRAW);
     
     gl.EnableVertexAttribArray(0);
     gl.VertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, 0, nil);
@@ -114,7 +114,7 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
     // i.e. x and y position of each glyph, its character code (for texture lookup) 
     // and color index.
     // Updated when drawing
-    gl.GenBuffers(1, ^font.vbo_instances);
+    gl.GenBuffers(1, &font.vbo_instances);
     gl.BindBuffer(gl.ARRAY_BUFFER, font.vbo_instances);
     gl.BufferData(gl.ARRAY_BUFFER, 4*4*MAX_STRING_LEN, nil, gl.DYNAMIC_DRAW);
 
@@ -124,19 +124,19 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
 
 
     // create and define font bitmap texture
-    gl.GenTextures(1, ^font.texture_fontdata);
+    gl.GenTextures(1, &font.texture_fontdata);
     gl.ActiveTexture(gl.TEXTURE0);
     gl.BindTexture(gl.TEXTURE_2D, font.texture_fontdata);
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, font.width, font.height, 0, gl.RED, gl.UNSIGNED_BYTE, ^font.bitmap[0]);
+    gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RED, font.width, font.height, 0, gl.RED, gl.UNSIGNED_BYTE, &font.bitmap[0]);
 
 
     // Create and define font metadata texture.
     // Contains per-glyph relative offsets and size info
     // and information about where each glyph is located in the bitmap texture.
     // All values are normalized.
-    gl.GenTextures(1, ^font.texture_metadata);
+    gl.GenTextures(1, &font.texture_metadata);
     gl.ActiveTexture(gl.TEXTURE1);
     gl.BindTexture(gl.TEXTURE_2D, font.texture_metadata);
 
@@ -145,23 +145,23 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
     
     for i in 0..<font.num_glyphs {
         k1 := 0*font.num_glyphs + i;
-        texture_metadata[4*k1+0] = cast(f32)font.cdata[i].x0/cast(f32)font.width;                     // lower left corner x coordiante.
-        texture_metadata[4*k1+1] = cast(f32)font.cdata[i].y0/cast(f32)font.height;                    // lower left corner y coordinate.
-        texture_metadata[4*k1+2] = cast(f32)(font.cdata[i].x1-font.cdata[i].x0)/cast(f32)font.width;  // width of glyph in bitmap texture.
-        texture_metadata[4*k1+3] = cast(f32)(font.cdata[i].y1-font.cdata[i].y0)/cast(f32)font.height; // height of glyphin bitmap texture..
+        texture_metadata[4*k1+0] = f32(font.cdata[i].x0)/f32(font.width);                     // lower left corner x coordiante.
+        texture_metadata[4*k1+1] = f32(font.cdata[i].y0)/f32(font.height);                    // lower left corner y coordinate.
+        texture_metadata[4*k1+2] = f32((font.cdata[i].x1-font.cdata[i].x0))/f32(font.width);  // width of glyph in bitmap texture.
+        texture_metadata[4*k1+3] = f32((font.cdata[i].y1-font.cdata[i].y0))/f32(font.height); // height of glyphin bitmap texture..
 
         k2 := 1*font.num_glyphs + i;
-        texture_metadata[4*k2+0] = cast(f32)font.cdata[i].xoff/cast(f32)font.width;   // x-offset from baseline of lower left corner.
-        texture_metadata[4*k2+1] = cast(f32)font.cdata[i].yoff/cast(f32)font.height;  // y-offset from baseline of lower left corner.
-        texture_metadata[4*k2+2] = cast(f32)font.cdata[i].xoff2/cast(f32)font.width;  // x-offset from baseline of upper right corner.
-        texture_metadata[4*k2+3] = cast(f32)font.cdata[i].yoff2/cast(f32)font.height; // y-offset from baseline of upper right corner.
+        texture_metadata[4*k2+0] = f32(font.cdata[i].xoff)/f32(font.width);   // x-offset from baseline of lower left corner.
+        texture_metadata[4*k2+1] = f32(font.cdata[i].yoff)/f32(font.height);  // y-offset from baseline of lower left corner.
+        texture_metadata[4*k2+2] = f32(font.cdata[i].xoff2)/f32(font.width);  // x-offset from baseline of upper right corner.
+        texture_metadata[4*k2+3] = f32(font.cdata[i].yoff2)/f32(font.height); // y-offset from baseline of upper right corner.
     }
 
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, font.num_glyphs, 2, 0, gl.RGBA, gl.FLOAT, ^texture_metadata[0]);
+    gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, font.num_glyphs, 2, 0, gl.RGBA, gl.FLOAT, &texture_metadata[0]);
 
     // Create and define color palette texture.
     // Based on Sublime Text 3's syntax highlighting
@@ -178,13 +178,13 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
          39,  40,  34  // clear color
     };
 
-    gl.GenTextures(1, ^font.texture_colors);
+    gl.GenTextures(1, &font.texture_colors);
     gl.ActiveTexture(gl.TEXTURE2);
     gl.BindTexture(gl.TEXTURE_1D, font.texture_colors);
     gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.TexParameteri(gl.TEXTURE_1D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGB, cast(i32)mv_ef_num_colors, 0, gl.RGB, gl.UNSIGNED_BYTE, ^mv_ef_colors[0]);
+    gl.TexImage1D(gl.TEXTURE_1D, 0, gl.RGB, i32(mv_ef_num_colors), 0, gl.RGB, gl.UNSIGNED_BYTE, &mv_ef_colors[0]);
 
     // Set constant uniforms
     gl.UseProgram(font.program);
@@ -192,9 +192,9 @@ init :: proc(vs_filename, fs_filename: string) -> bool{
     gl.Uniform1i(GetUniformLocation_(font.program, "sampler_meta\x00"), 1);
     gl.Uniform1i(GetUniformLocation_(font.program, "sampler_colors\x00"), 2);
 
-    gl.Uniform2f(GetUniformLocation_(font.program, "res_bitmap\x00"), cast(f32)font.width, cast(f32)font.height);
-    gl.Uniform2f(GetUniformLocation_(font.program, "res_meta\x00"),  cast(f32)font.num_glyphs, 2.0);
-    gl.Uniform1f(GetUniformLocation_(font.program, "num_colors\x00"),  cast(f32)mv_ef_num_colors);
+    gl.Uniform2f(GetUniformLocation_(font.program, "res_bitmap\x00"), f32(font.width), f32(font.height));
+    gl.Uniform2f(GetUniformLocation_(font.program, "res_meta\x00"),  f32(font.num_glyphs), 2.0);
+    gl.Uniform1f(GetUniformLocation_(font.program, "num_colors\x00"),  f32(mv_ef_num_colors));
     gl.Uniform1f(GetUniformLocation_(font.program, "offset_firstline\x00"), font.linedist-font.linegap);
 
     font.initialized =  true;
@@ -234,8 +234,8 @@ draw :: proc(str: []u8, col: []u8, offsetx, offsety, font_size: f32) {
         code_base := c-32; // first glyph is ' ', i.e. ascii code 32
         text_glyph_data[4*ctr+0] = X;                                  // x position of glyph (baseline)
         text_glyph_data[4*ctr+1] = Y;                                  // y position of glyph
-        text_glyph_data[4*ctr+2] = cast(f32)code_base;                 // character code for texture lookup
-        text_glyph_data[4*ctr+3] = col != nil ? cast(f32)col[i] : 0.0; // color palette index 
+        text_glyph_data[4*ctr+2] = f32(code_base);                 // character code for texture lookup
+        text_glyph_data[4*ctr+3] = col != nil ? f32(col[i]) : 0.0; // color palette index 
 
         X += font.cdata[code_base].xadvance*(font_size/font.font_size); 
         ctr++;
@@ -249,26 +249,26 @@ draw :: proc(str: []u8, col: []u8, offsetx, offsety, font_size: f32) {
     last_blend_src, last_blend_dst: i32; 
     last_blend_equation_rgb, last_blend_equation_alpha: i32; 
 
-    gl.GetIntegerv(gl.CURRENT_PROGRAM, ^last_program);
-    gl.GetIntegerv(gl.VERTEX_ARRAY_BINDING, ^last_vertex_array);
+    gl.GetIntegerv(gl.CURRENT_PROGRAM, &last_program);
+    gl.GetIntegerv(gl.VERTEX_ARRAY_BINDING, &last_vertex_array);
 
     gl.ActiveTexture(gl.TEXTURE0); 
-    gl.GetIntegerv(gl.TEXTURE_BINDING_2D, ^last_texture0);
+    gl.GetIntegerv(gl.TEXTURE_BINDING_2D, &last_texture0);
     gl.ActiveTexture(gl.TEXTURE1); 
-    gl.GetIntegerv(gl.TEXTURE_BINDING_2D, ^last_texture1);
+    gl.GetIntegerv(gl.TEXTURE_BINDING_2D, &last_texture1);
     gl.ActiveTexture(gl.TEXTURE2); 
-    gl.GetIntegerv(gl.TEXTURE_BINDING_1D, ^last_texture2);
+    gl.GetIntegerv(gl.TEXTURE_BINDING_1D, &last_texture2);
 
-    gl.GetIntegerv(gl.BLEND_SRC, ^last_blend_src);
-    gl.GetIntegerv(gl.BLEND_DST, ^last_blend_dst);
-    gl.GetIntegerv(gl.BLEND_EQUATION_RGB,   ^last_blend_equation_rgb);
-    gl.GetIntegerv(gl.BLEND_EQUATION_ALPHA, ^last_blend_equation_alpha);
+    gl.GetIntegerv(gl.BLEND_SRC, &last_blend_src);
+    gl.GetIntegerv(gl.BLEND_DST, &last_blend_dst);
+    gl.GetIntegerv(gl.BLEND_EQUATION_RGB,   &last_blend_equation_rgb);
+    gl.GetIntegerv(gl.BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
 
     last_enable_blend      := gl.IsEnabled(gl.BLEND);
     last_enable_depth_test := gl.IsEnabled(gl.DEPTH_TEST);
 
     dims: [4]i32;
-    gl.GetIntegerv(gl.VIEWPORT, ^dims[0]);
+    gl.GetIntegerv(gl.VIEWPORT, &dims[0]);
 
     // Setup render state: alpha-blending enabled
     gl.Disable(gl.DEPTH_TEST);
@@ -290,29 +290,29 @@ draw :: proc(str: []u8, col: []u8, offsetx, offsety, font_size: f32) {
     gl.UseProgram(font.program);
     gl.Uniform1f(GetUniformLocation_(font.program, "scale_factor\x00"), font_size/font.font_size);
     gl.Uniform2f(GetUniformLocation_(font.program, "string_offset\x00"), offsetx, offsety);
-    gl.Uniform2f(GetUniformLocation_(font.program, "resolution\x00"), cast(f32)dims[2], cast(f32)dims[3]);
+    gl.Uniform2f(GetUniformLocation_(font.program, "resolution\x00"), f32(dims[2]), f32(dims[3]));
 
     // Actual uploading of instanced data
     gl.BindBuffer(gl.ARRAY_BUFFER, font.vbo_instances);
-    gl.BufferSubData(gl.ARRAY_BUFFER, 0, 4*4*ctr, ^text_glyph_data[0]);
+    gl.BufferSubData(gl.ARRAY_BUFFER, 0, 4*4*ctr, &text_glyph_data[0]);
 
     // Actual drawing
-    gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, cast(i32)ctr);
+    gl.DrawArraysInstanced(gl.TRIANGLES, 0, 6, i32(ctr));
 
     
     // Restore modified GL state, Needs to be cast to u32, because OpenGL is dumb.
-    gl.UseProgram(cast(u32)last_program);
+    gl.UseProgram(u32(last_program));
     
     gl.ActiveTexture(gl.TEXTURE0); 
-    gl.BindTexture(gl.TEXTURE_2D, cast(u32)last_texture0);
+    gl.BindTexture(gl.TEXTURE_2D, u32(last_texture0));
     gl.ActiveTexture(gl.TEXTURE1); 
-    gl.BindTexture(gl.TEXTURE_2D, cast(u32)last_texture1);
+    gl.BindTexture(gl.TEXTURE_2D, u32(last_texture1));
     gl.ActiveTexture(gl.TEXTURE2); 
-    gl.BindTexture(gl.TEXTURE_1D, cast(u32)last_texture2);
+    gl.BindTexture(gl.TEXTURE_1D, u32(last_texture2));
 
-    gl.BlendEquationSeparate(cast(u32)last_blend_equation_rgb, cast(u32)last_blend_equation_alpha);
-    gl.BindVertexArray(cast(u32)last_vertex_array);
-    gl.BlendFunc(cast(u32)last_blend_src,cast(u32)last_blend_dst);
+    gl.BlendEquationSeparate(u32(last_blend_equation_rgb), u32(last_blend_equation_alpha));
+    gl.BindVertexArray(u32(last_vertex_array));
+    gl.BlendFunc(u32(last_blend_src),u32(last_blend_dst));
     
     if last_enable_depth_test != 0 {
         gl.Enable(gl.DEPTH_TEST);
@@ -362,15 +362,15 @@ load_shaders :: proc(vertex_shader_filename, fragment_shader_filename: string) -
                         iv_func: proc(u32, i32, ^i32) #cc_c, 
                         log_func: proc(u32, u32, ^u32, ^byte) #cc_c) -> (bool) {
         result, info_log_length : i32;
-        iv_func(id, status, ^result);
-        iv_func(id, INFO_LOG_LENGTH, ^info_log_length);
+        iv_func(id, status, &result);
+        iv_func(id, INFO_LOG_LENGTH, &info_log_length);
 
         if result == 0 {
             error_message := make([]byte, info_log_length);
             defer free(error_message);
 
-            log_func(id, cast(u32)info_log_length, nil, ^error_message[0]);
-            fmt.printf(cast(string)error_message[0..<len(error_message)-1]); 
+            log_func(id,u32(info_log_length), nil, &error_message[0]);
+            fmt.printf(string(error_message[0..<len(error_message)-1])); 
 
             return true;
         }
@@ -388,7 +388,7 @@ load_shaders :: proc(vertex_shader_filename, fragment_shader_filename: string) -
         defer free(shader_code);
 
         shader_id := CreateShader(shader_type);
-        ShaderSource(shader_id, 1, cast(^^byte)^shader_code, nil);
+        ShaderSource(shader_id, 1, ^^byte(&shader_code), nil);
         CompileShader(shader_id);
 
         if (check_error(shader_id, COMPILE_STATUS, GetShaderiv, GetShaderInfoLog)) {
@@ -401,7 +401,7 @@ load_shaders :: proc(vertex_shader_filename, fragment_shader_filename: string) -
     compile_shader_from_string :: proc(shader_code: string, shader_type: i32) -> (u32, bool) {
 
         shader_id := CreateShader(shader_type);
-        ShaderSource(shader_id, 1, cast(^^byte)^shader_code, nil);
+        ShaderSource(shader_id, 1, ^^byte(&shader_code), nil);
         CompileShader(shader_id);
 
         if (check_error(shader_id, COMPILE_STATUS, GetShaderiv, GetShaderInfoLog)) {

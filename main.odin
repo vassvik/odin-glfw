@@ -5,11 +5,12 @@
 #import "fmt.odin";
 #import "math.odin";
 
+
 // Minimal Standard LCG
 seed : u32 = 12345;
 rng :: proc() -> f64 {
     seed *= 16807;
-    return cast(f64)seed / cast(f64)0x100000000;
+    return f64(seed) / f64(0x100000000);
 }
 
 main :: proc() {
@@ -31,7 +32,7 @@ main :: proc() {
     col := make([]u8, num);
     defer free(col);
     for i in 0..<num {
-        col[i] = cast(u8)(i % 9);
+        col[i] = u8(i % 9);
     }
 
     // allocate room from characters
@@ -60,7 +61,7 @@ main :: proc() {
             if i % 240 == 0 && i != 0 {
                 str[i] = '\n';
             } else {
-                str[i] = 32 + (cast(u8)((96+128)*rng() + 10.0*glfw.GetTime()) % 224);
+                str[i] = 32 + (u8((96+128)*rng() + 10.0*glfw.GetTime()) % 224);
             }
         }
 
@@ -87,7 +88,7 @@ init_glfw :: proc(title: string) -> (^glfw.window, bool) {
     WindowHint(CONTEXT_VERSION_MINOR, 3);
     WindowHint(OPENGL_PROFILE, OPENGL_CORE_PROFILE);
     WindowHint(OPENGL_FORWARD_COMPAT, 1);
-    window_ := CreateWindow(1600, 900, cast(^byte)^title[0], nil, nil);
+    window_ := CreateWindow(1600, 900, ^byte(&title[0]), nil, nil);
     if window_ == nil {
         fmt.println("Error creating window");
         Terminate();
@@ -97,7 +98,12 @@ init_glfw :: proc(title: string) -> (^glfw.window, bool) {
     MakeContextCurrent(window_);
     SwapInterval(0);
 
+    SetKeyCallback(window_, key_callback);
     return window_, true;
+}
+
+key_callback :: proc(window: ^glfw.window, key, scancode, action, mods: i32) #cc_c {
+    fmt.printf("Key %d %s\n", key, action == glfw.RELEASE ? "pressed" : "released");
 }
 
 
@@ -121,10 +127,10 @@ calculate_frame_timings :: proc(window: ^glfw.window) {
     last_frame_time = dt;
 
     if counter == num_samples {
-        avg_dt  /= cast(f64)num_samples;
-        avg_dt2 /= cast(f64)num_samples;
+        avg_dt  /= f64(num_samples);
+        avg_dt2 /= f64(num_samples);
         std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
-        ste_dt := std_dt/math.sqrt(cast(f64)num_samples);
+        ste_dt := std_dt/math.sqrt(f64(num_samples));
 
         // avg: frame time average over num_samples frames
         // std: standard deviation calculated over those frames
@@ -133,9 +139,9 @@ calculate_frame_timings :: proc(window: ^glfw.window) {
         title := fmt.aprintf("dt: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1000.0*avg_dt, 1000.0*std_dt, 1000.0*ste_dt, 1.0/avg_dt);
         defer free(title);
 
-        glfw.SetWindowTitle(window, ^title[0]);
+        glfw.SetWindowTitle(window, &title[0]);
         
-        num_samples = cast(int)(1.0/avg_dt);
+        num_samples = int(1.0/avg_dt);
         
         avg_dt = 0.0;
         avg_dt2 = 0.0;
