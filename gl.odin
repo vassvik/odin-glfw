@@ -1,6 +1,5 @@
 #load "opengl_constants.odin";
 
-#import "glfw.odin"; // for glfw.GetProcAddress
 
 GenBuffers:               proc(count: i32, buffers: ^u32) #cc_c;
 GenVertexArrays:          proc(count: i32, buffers: ^u32) #cc_c;
@@ -80,10 +79,8 @@ DrawArraysInstanced:      proc(mode: u32, first: i32, count, primcount: i32) #cc
 BlendEquationSeparate:    proc(modeRGB, modeAlpha: u32) #cc_c;
 
 
-init :: proc() {
-	//set_proc_address :: proc(p: rawptr, name: string) #inline { (cast(^(proc() #cc_c))p)^ = glfw.GetProcAddress(^name[0]); }
-	set_proc_address :: proc(p: rawptr, name: string) #inline { (^(proc() #cc_c))(p)^ = glfw.GetProcAddress(&name[0]); }
-	
+init :: proc(set_proc_address: proc(p: rawptr, name: string)) {
+		
 	set_proc_address(&ClearColor,              "glClearColor\x00");
 	set_proc_address(&Clear,                   "glClear\x00");
 

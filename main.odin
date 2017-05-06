@@ -5,13 +5,116 @@
 #import "fmt.odin";
 #import "math.odin";
 
-
-// Minimal Standard LCG
-seed : u32 = 12345;
-rng :: proc() -> f64 {
-    seed *= 16807;
-    return f64(seed) / f64(0x100000000);
+pos64 :: raw_union {
+    data: [2]f64,
+    using _ : struct {
+        x, y: f64
+    }
 }
+
+io: struct {
+    mousewheel_delta: pos64,
+    mousewheel:       pos64,
+    
+    mousepos_delta:      pos64,
+    mousepos:            pos64,
+    mousepos_last_click: [5]pos64,
+
+    mousebuttons:          [5]int,
+    time_last_mouse_click: [5]f64,
+
+    using _: raw_union {
+        mods: [4]bool,
+        using _: struct { mod_ctrl, mod_shift, mod_alt, mod_meta: bool },
+    },
+
+    keys:                [glfw.KEY_LAST]int,
+    time_last_key_press: [glfw.KEY_LAST]f64,
+};
+
+double_click_time :: 0.5;
+double_click_deadzone :: 10.0;
+global_mousewheel_deltas: [2]f64; // --__--
+
+update_input :: proc(window: ^glfw.window) {
+    // block to isolate bug below..
+    {
+        using io;
+
+        x, y: f64;
+        glfw.GetCursorPos(window, &x, &y);
+        current_time := glfw.GetTime();
+
+        for i in 0..<5 {
+            new_state := int(glfw.GetMouseButton(window, i32(i)));
+            old_state := mousebuttons[i] & 1;
+            mousebuttons[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
+
+            // check for double click
+            // @TODO: Make only one button double-clickable at a time?, 
+            //        such that if a different key is pressed within 
+            //        the double click time, it will reset
+            if ((mousebuttons[i] & 3) == 3 && current_time - time_last_mouse_click[i] < double_click_time 
+                                              && abs(mousepos_last_click[i].x - x) < double_click_deadzone
+                                              && abs(mousepos_last_click[i].y - y) < double_click_deadzone) {
+                mousebuttons[i] |= 4;
+            } else {
+                mousebuttons[i] &= ~4;
+            }
+
+            // reset double click info
+            if ((mousebuttons[i]&3) == 3) {
+                time_last_mouse_click[i] = current_time;
+
+                mousepos_last_click[i].x = x;
+                mousepos_last_click[i].y = y;
+            }
+        }
+
+        // mouse position
+        mousepos_delta.x = x - mousepos.x;
+        mousepos_delta.y = y - mousepos.y;
+        mousepos.x = x;
+        mousepos.y = y;
+
+        // mouse wheel, from callback BLEH
+        mousewheel_delta.x = global_mousewheel_deltas[0];
+        mousewheel_delta.y = global_mousewheel_deltas[1];
+        mousewheel.x += global_mousewheel_deltas[0];
+        mousewheel.y += global_mousewheel_deltas[1];
+
+        for i in ' '..<glfw.KEY_LAST {
+            new_state := int(glfw.GetKey(window, i32(i)));
+            old_state := keys[i] & 1;
+            keys[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
+
+            // double tap
+            if ((keys[i] & 3) == 3 && current_time - time_last_key_press[i] < double_click_time) {
+                keys[i] |= 4;
+            } else {
+                keys[i] &= ~4;
+            }
+
+            // pressed
+            if ((keys[i]&3) == 3) {
+                time_last_key_press[i] = current_time;
+            }
+        }
+    }
+
+    // @BUG: HERE BE TROUBLE. Adding io. to any of the mod variables, 
+    // or to any of the keys makes it *not* segfault, 
+    // otherwise it returns with error code -11.
+
+    // The code above this line works just fine using "using".
+    using io;
+
+    mod_ctrl  = (keys[glfw.KEY_LEFT_CONTROL] & 1 == 1) || (keys[glfw.KEY_RIGHT_CONTROL] & 1 == 1);
+    mod_shift = (keys[glfw.KEY_LEFT_SHIFT]   & 1 == 1) || (keys[glfw.KEY_RIGHT_SHIFT]   & 1 == 1);
+    mod_alt   = (keys[glfw.KEY_LEFT_ALT]     & 1 == 1) || (keys[glfw.KEY_RIGHT_ALT]     & 1 == 1);
+    mod_meta  = (keys[glfw.KEY_LEFT_SUPER]   & 1 == 1) || (keys[glfw.KEY_RIGHT_SUPER]   & 1 == 1);
+}
+
 
 main :: proc() {
     // init glfw and create window
@@ -21,7 +124,8 @@ main :: proc() {
     }
 
     // load opengl function pointers
-    gl.init();
+    
+    gl.init( proc(p: rawptr, name: string) { (^(proc() #cc_c))(p)^ = glfw.GetProcAddress(&name[0]); } );
 
     // Optionally load shaders manually
     //success := mv_ef.init("extra/font_vertex_shader.vs", "extra/font_fragment_shader.fs");
@@ -31,7 +135,7 @@ main :: proc() {
     // random colors, there are currently up to 9 colors to choose from
     col := make([]u8, num);
     defer free(col);
-    for i in 0..<num {
+    for i in 0..< num {
         col[i] = u8(i % 9);
     }
 
@@ -47,6 +151,8 @@ main :: proc() {
         
         // events
         glfw.PollEvents();
+        update_input(window);
+
         if glfw.GetKey(window, glfw.KEY_ESCAPE) == glfw.PRESS {
             glfw.SetWindowShouldClose(window, 1);
         }
@@ -147,4 +253,12 @@ calculate_frame_timings :: proc(window: ^glfw.window) {
         avg_dt2 = 0.0;
         counter = 0;
     }
+}
+
+
+// Minimal Standard LCG
+seed : u32 = 12345;
+rng :: proc() -> f64 {
+    seed *= 16807;
+    return f64(seed) / f64(0x100000000);
 }

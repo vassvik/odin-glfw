@@ -115,6 +115,7 @@ GetKey         :: proc(window: ^window, key: i32) -> i32                        
 GetKeyName     :: proc(key, scancode: i32) -> ^i8                                                             #foreign glfw "glfwGetKeyName";
 GetMouseButton :: proc(window: ^window, button: i32) -> i32                                                   #foreign glfw "glfwGetMouseButton";
 GetCursorPos   :: proc(window: ^window, xpos, ypos: ^f64)                                                     #foreign glfw "glfwGetCursorPos";
+
 SetCursorPos   :: proc(window: ^window, xpos, ypos: f64)                                                      #foreign glfw "glfwSetCursorPos";
 
 CreateCursor         :: proc(image: ^image, xhot, yhot: i32) -> ^cursor                                       #foreign glfw "glfwCreateCursor";
