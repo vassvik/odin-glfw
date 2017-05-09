@@ -12,7 +12,14 @@ pos64 :: raw_union {
     }
 }
 
-io: struct {
+pos32 :: raw_union {
+    data: [2]f32,
+    using _ : struct {
+        x, y: f32
+    }
+}
+
+global_io: struct {
     mousewheel_delta: pos64,
     mousewheel:       pos64,
     
@@ -36,83 +43,155 @@ double_click_time :: 0.5;
 double_click_deadzone :: 10.0;
 global_mousewheel_deltas: [2]f64; // --__--
 
+
+global_state_desc := [..]string{"up", "down", "released", "clicked", "unknown", "unknown", "unknown", "double-clicked"};
+
+global_cursor: pos32;
+global_previous_cursor: pos32;
+global_cursor_last_anchor: pos32;
+
+current_active, current_hot: int;
+active_live, hover_line: int;
+
+font_size : f32 = 24.0;
+
+
 update_input :: proc(window: ^glfw.window) {
-    // block to isolate bug below..
-    {
-        using io;
+    using global_io;
 
-        x, y: f64;
-        glfw.GetCursorPos(window, &x, &y);
-        current_time := glfw.GetTime();
+    x, y: f64;
+    glfw.GetCursorPos(window, &x, &y);
+    //fmt.println(x, y);
+    current_time := glfw.GetTime();
 
-        for i in 0..<5 {
-            new_state := int(glfw.GetMouseButton(window, i32(i)));
-            old_state := mousebuttons[i] & 1;
-            mousebuttons[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
+    for i in 0..<5 {
+        new_state := int(glfw.GetMouseButton(window, i32(i)));
+        old_state := mousebuttons[i] & 1;
+        mousebuttons[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
 
-            // check for double click
-            // @TODO: Make only one button double-clickable at a time?, 
-            //        such that if a different key is pressed within 
-            //        the double click time, it will reset
-            if ((mousebuttons[i] & 3) == 3 && current_time - time_last_mouse_click[i] < double_click_time 
-                                              && abs(mousepos_last_click[i].x - x) < double_click_deadzone
-                                              && abs(mousepos_last_click[i].y - y) < double_click_deadzone) {
-                mousebuttons[i] |= 4;
-            } else {
-                mousebuttons[i] &= ~4;
-            }
-
-            // reset double click info
-            if ((mousebuttons[i]&3) == 3) {
-                time_last_mouse_click[i] = current_time;
-
-                mousepos_last_click[i].x = x;
-                mousepos_last_click[i].y = y;
-            }
+        // check for double click
+        // @TODO: Make only one button double-clickable at a time?, 
+        //        such that if a different key is pressed within 
+        //        the double click time, it will reset
+        if ((mousebuttons[i] & 3) == 3 && current_time - time_last_mouse_click[i] < double_click_time 
+                                          && abs(mousepos_last_click[i].x - x) < double_click_deadzone
+                                          && abs(mousepos_last_click[i].y - y) < double_click_deadzone) {
+            mousebuttons[i] |= 4;
+        } else {
+            mousebuttons[i] &= ~4;
         }
 
-        // mouse position
-        mousepos_delta.x = x - mousepos.x;
-        mousepos_delta.y = y - mousepos.y;
-        mousepos.x = x;
-        mousepos.y = y;
+        // reset double click info
+        if ((mousebuttons[i]&3) == 3) {
+            time_last_mouse_click[i] = current_time;
 
-        // mouse wheel, from callback BLEH
-        mousewheel_delta.x = global_mousewheel_deltas[0];
-        mousewheel_delta.y = global_mousewheel_deltas[1];
-        mousewheel.x += global_mousewheel_deltas[0];
-        mousewheel.y += global_mousewheel_deltas[1];
-
-        for i in ' '..<glfw.KEY_LAST {
-            new_state := int(glfw.GetKey(window, i32(i)));
-            old_state := keys[i] & 1;
-            keys[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
-
-            // double tap
-            if ((keys[i] & 3) == 3 && current_time - time_last_key_press[i] < double_click_time) {
-                keys[i] |= 4;
-            } else {
-                keys[i] &= ~4;
-            }
-
-            // pressed
-            if ((keys[i]&3) == 3) {
-                time_last_key_press[i] = current_time;
-            }
+            mousepos_last_click[i].x = x;
+            mousepos_last_click[i].y = y;
         }
     }
 
-    // @BUG: HERE BE TROUBLE. Adding io. to any of the mod variables, 
-    // or to any of the keys makes it *not* segfault, 
-    // otherwise it returns with error code -11.
+    // mouse position
+    mousepos_delta.x = x - mousepos.x;
+    mousepos_delta.y = y - mousepos.y;
+    mousepos.x = x;
+    mousepos.y = y;
 
-    // The code above this line works just fine using "using".
-    using io;
+
+    // mouse wheel, from callback BLEH
+    mousewheel_delta.x = global_mousewheel_deltas[0];
+    mousewheel_delta.y = global_mousewheel_deltas[1];
+    mousewheel.x += global_mousewheel_deltas[0];
+    mousewheel.y += global_mousewheel_deltas[1];
+
+    for i in ' '..<glfw.KEY_LAST {
+        new_state := int(glfw.GetKey(window, i32(i)));
+        old_state := keys[i] & 1;
+        keys[i] = new_state | ( (old_state != new_state ? 1 : 0) << 1 );
+
+        // double tap
+        if ((keys[i] & 3) == 3 && current_time - time_last_key_press[i] < double_click_time) {
+            keys[i] |= 4;
+        } else {
+            keys[i] &= ~4;
+        }
+
+        // pressed
+        if ((keys[i]&3) == 3) {
+            time_last_key_press[i] = current_time;
+        }
+    }
 
     mod_ctrl  = (keys[glfw.KEY_LEFT_CONTROL] & 1 == 1) || (keys[glfw.KEY_RIGHT_CONTROL] & 1 == 1);
     mod_shift = (keys[glfw.KEY_LEFT_SHIFT]   & 1 == 1) || (keys[glfw.KEY_RIGHT_SHIFT]   & 1 == 1);
     mod_alt   = (keys[glfw.KEY_LEFT_ALT]     & 1 == 1) || (keys[glfw.KEY_RIGHT_ALT]     & 1 == 1);
     mod_meta  = (keys[glfw.KEY_LEFT_SUPER]   & 1 == 1) || (keys[glfw.KEY_RIGHT_SUPER]   & 1 == 1);
+}
+
+draw_string :: proc(format: string, args: ..any) {
+    draw_string_colored(nil, format, ..args);
+}
+
+draw_string_colored :: proc(col: []u8, format: string, args: ..any) {
+    formatted := fmt.aprintf(format, ..args);
+    defer free(formatted);
+
+    width, height := mv_ef.string_dimensions(formatted, font_size);
+    mv_ef.draw([]u8(formatted), col, global_cursor.x, global_cursor.y, font_size);
+
+    global_previous_cursor.x = global_cursor.x + width;
+    global_previous_cursor.y = global_cursor.y;
+    global_cursor.x = global_cursor_last_anchor.x;
+    global_cursor.y -= height;
+}
+
+
+set_pos :: proc(x, y: f32) {
+    global_cursor_last_anchor.x = x;
+    global_cursor_last_anchor.y = y;
+    global_cursor.x = x;
+    global_cursor.y = y;
+}
+
+same_line :: proc() {
+    global_cursor.x = global_previous_cursor.x;
+    global_cursor.y = global_previous_cursor.y;
+}
+add_vertical_spacing :: proc(y: f32) {
+    global_cursor.y -= y;
+}
+
+draw_io :: proc() {
+    using global_io;
+
+    // mouse position:
+    draw_string("mouse pos: (%d, %d)", int(mousepos.x), int(mousepos.y));
+    draw_string("mouse delta: (%d, %d)", int(mousepos_delta.x), int(mousepos_delta.y));
+    add_vertical_spacing(0.5*font_size);
+    
+    // button states:
+    for button, i in mousebuttons {
+        draw_string("mouse%d: %s", i+1, global_state_desc[button]);
+    }
+    add_vertical_spacing(0.5*font_size);
+
+    // mousewheel
+    draw_string("wheel: (%d, %d)", int(mousewheel.y), int(mousewheel_delta.y));
+    add_vertical_spacing(0.5*font_size);
+
+    // keyboard modifiers
+    draw_string("mods:");
+    draw_string("    ctrl  = %s", (mod_ctrl  ? "on" : "off"));
+    draw_string("    shift = %s", (mod_shift ? "on" : "off"));
+    draw_string("    alt   = %s", (mod_alt   ? "on" : "off"));
+    draw_string("    meta  = %s", (mod_meta  ? "on" : "off"));
+    add_vertical_spacing(0.5*font_size);
+
+    // key states:
+    for key, i in keys {
+        if (key != 0) {
+            draw_string("key[%d] = %s", i, global_state_desc[key]);
+        }
+    }
 }
 
 
@@ -148,9 +227,15 @@ main :: proc() {
     for glfw.WindowShouldClose(window) == 0 {
         // Set window title based on frame time
         calculate_frame_timings(window);
+
         
+        global_mousewheel_deltas[0] = 0.0;
+        global_mousewheel_deltas[1] = 0.0;
+        global_io.mousepos_delta.x = 0.0;
+        global_io.mousepos_delta.y = 0.0;
         // events
         glfw.PollEvents();
+        
         update_input(window);
 
         if glfw.GetKey(window, glfw.KEY_ESCAPE) == glfw.PRESS {
@@ -173,6 +258,14 @@ main :: proc() {
 
         // actual drawing
         mv_ef.draw(str, col, 0.0, 0.0, 12.0);
+
+
+        set_pos(0.0, 0.0);
+
+        draw_string("test %d asd %f", 1, 3.1);
+        draw_string("test %d asd %f", 1, 2.1);
+        draw_io();
+
 
         glfw.SwapBuffers(window);
     }
@@ -204,12 +297,15 @@ init_glfw :: proc(title: string) -> (^glfw.window, bool) {
     MakeContextCurrent(window_);
     SwapInterval(0);
 
-    SetKeyCallback(window_, key_callback);
+    SetScrollCallback(window_, mousewheel_callback);
     return window_, true;
 }
 
-key_callback :: proc(window: ^glfw.window, key, scancode, action, mods: i32) #cc_c {
-    fmt.printf("Key %d %s\n", key, action == glfw.RELEASE ? "pressed" : "released");
+
+mousewheel_callback :: proc(window: ^glfw.window, xoffset, yoffset: f64) #cc_c {
+    global_mousewheel_deltas[0] = xoffset;
+    global_mousewheel_deltas[1] = yoffset;
+    fmt.println(xoffset, yoffset);
 }
 
 
