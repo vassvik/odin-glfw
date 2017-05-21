@@ -1,5 +1,10 @@
 # odin-glfw
 
+Odin bindings to GLFW 3.2.1. 
+
+Contains a minimal usage example program, without any OpenGL functionality. 
+
+
 In Windows, just build normally using the latest build, as it will use the bundled .dll and import lib (works as of 21-05-2017).
 
 In Linux, only require glfw to be installed (from your repo) and in the library path. 
