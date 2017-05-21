@@ -2,22 +2,22 @@
 #foreign_system_library glfw "glfw3dll.lib" when ODIN_OS == "windows";
 
 /*** Structs ***/
-window  :: struct{};
-monitor :: struct{};
-cursor  :: struct{};
+window  :: struct #ordered {};
+monitor :: struct #ordered {};
+cursor  :: struct #ordered {};
 
-vidmode :: struct {
+vidmode :: struct #ordered {
 	width, height:                i32,
 	redBits, greenBits, blueBits: i32,
 	refreshRate:                  i32
 };
 
-gammaramp :: struct {
+gammaramp :: struct #ordered {
 	red, green, blue: ^u16,
 	size:              u32
 };
 
-image :: struct {
+image :: struct #ordered {
 	width, height:  i32,
 	pixels:        ^byte
 };

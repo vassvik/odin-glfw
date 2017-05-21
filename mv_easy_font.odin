@@ -7,14 +7,14 @@ GetUniformLocation_ :: proc(program: u32, str: string) -> i32 {
 }
 
 // from stb_truetype.h, which was used to create and pack the bitmap
-stbtt_packedchar :: struct {
+stbtt_packedchar :: struct #ordered {
     x0, y0, x1, y1: u16,
     xoff, yoff:     f32,
     xadvance:       f32,
     xoff2, yoff2:   f32,
 };
 
-font_info :: struct {
+font_info :: struct #ordered {
 	// stuff from file font.bin
     height:           i32,
     width:            i32,
@@ -328,6 +328,11 @@ draw :: proc(str: []u8, col: []u8, offsetx, offsety, font_size: f32) {
 
 // calculates pixel size of string in units of font_size
 string_dimensions :: proc(str: string, font_size: f32) -> (f32, f32) {
+    
+    if !font.initialized {
+        init("", "");
+    }
+    
     X, Y, W: f32;
 
     for g in str {
@@ -514,7 +519,22 @@ out vec4 color;
 
 void main()
 {
+    vec2 uv2 = uv;
+    uv2.y -= 0.5/res_bitmap.y;
     vec3 col = texture(sampler_colors, (color_index+0.5)/num_colors).rgb;
-    float s0 = texture(sampler_font, uv + 0.0*vec2( 0.5,  0.5)/res_bitmap).r; 
-	color = vec4(col, s0);
+    float s0 = texture(sampler_font, uv2 + vec2(  0.0,   0.0)/res_bitmap).r; 
+    float s1 = texture(sampler_font, uv2 + vec2(  0.5,   0.0)/res_bitmap).r; 
+    float s2 = texture(sampler_font, uv2 + vec2( -0.5,   0.0)/res_bitmap).r; 
+    float s3 = texture(sampler_font, uv2 + vec2(  0.0,   0.5)/res_bitmap).r; 
+    float s4 = texture(sampler_font, uv2 + vec2(  0.0,  -0.5)/res_bitmap).r; 
+    float s5 = texture(sampler_font, uv2 + vec2(  0.5,   0.5)/res_bitmap).r; 
+    float s6 = texture(sampler_font, uv2 + vec2( -0.5,   0.5)/res_bitmap).r; 
+    float s7 = texture(sampler_font, uv2 + vec2( -0.5,  -0.5)/res_bitmap).r; 
+    float s8 = texture(sampler_font, uv2 + vec2(  0.5,  -0.5)/res_bitmap).r; 
+    float s = (1*s0 + 1*s1 + 1*s2 + 1*s3 + 1*s4 + s5 + s6 + s7 + s8)/(9);
+    //float s = (4*s0 + 2*s1 + 2*s2 + 2*s3 + 2*s4 + s5 + s6 + s7 + s8)/(1*4 + 4*2 + 4*1);
+    float sr = texture(sampler_font, uv2 + vec2(  0.0,   0.0)/res_bitmap).r; 
+    float sg = texture(sampler_font, uv2 + vec2(  0.333,   0.0)/res_bitmap).r; 
+    float sb = texture(sampler_font, uv2 + vec2(  0.666,   0.0)/res_bitmap).r; 
+	color = vec4(col, s);
 }`;
