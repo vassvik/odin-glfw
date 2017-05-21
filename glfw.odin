@@ -144,26 +144,26 @@ VulkanSupported    :: proc() -> i32                                             
 
 GetRequiredInstanceExtensions :: proc(count: ^u32) -> ^^byte                                                  #foreign glfw "glfwGetRequiredInstanceExtensions";
 
-SetMonitorCallback         :: proc(window: ^window, cbfun: monitorProc)                                       #foreign glfw "glfwSetMonitorCallback";
-SetFramebuffersizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc)                               #foreign glfw "glfwSetFramebuffersizeCallback";
-SetWindowPosCallback       :: proc(window: ^window, cbfun: windowposProc)                                     #foreign glfw "glfwSetWindowPosCallback";
-SetWindowSizeCallback      :: proc(window: ^window, cbfun: windowsizeProc)                                    #foreign glfw "glfwSetWindowSizeCallback";
-SetWindowCloseCallback     :: proc(window: ^window, cbfun: windowcloseProc)                                   #foreign glfw "glfwSetWindowCloseCallback";
-SetWindowRefreshCallback   :: proc(window: ^window, cbfun: windowrefreshProc)                                 #foreign glfw "glfwSetWindowRefreshCallback";
-SetWindowFocusCallback     :: proc(window: ^window, cbfun: windowfocusProc)                                   #foreign glfw "glfwSetWindowFocusCallback";
-SetWindowIconifyCallback   :: proc(window: ^window, cbfun: windowiconifyProc)                                 #foreign glfw "glfwSetWindowIconifyCallback";
-SetDropCallback            :: proc(window: ^window, cbfun: dropProc)                                          #foreign glfw "glfwSetDropCallback";
+SetMonitorCallback         :: proc(window: ^window, cbfun: monitorProc) -> monitorProc                        #foreign glfw "glfwSetMonitorCallback";
+SetFramebuffersizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc) -> framebuffersizeProc        #foreign glfw "glfwSetFramebuffersizeCallback";
+SetWindowPosCallback       :: proc(window: ^window, cbfun: windowposProc) -> windowposProc                    #foreign glfw "glfwSetWindowPosCallback";
+SetWindowSizeCallback      :: proc(window: ^window, cbfun: windowsizeProc) -> windowsizeProc                  #foreign glfw "glfwSetWindowSizeCallback";
+SetWindowCloseCallback     :: proc(window: ^window, cbfun: windowcloseProc) -> windowcloseProc                #foreign glfw "glfwSetWindowCloseCallback";
+SetWindowRefreshCallback   :: proc(window: ^window, cbfun: windowrefreshProc) -> windowrefreshProc            #foreign glfw "glfwSetWindowRefreshCallback";
+SetWindowFocusCallback     :: proc(window: ^window, cbfun: windowfocusProc) -> windowfocusProc                #foreign glfw "glfwSetWindowFocusCallback";
+SetWindowIconifyCallback   :: proc(window: ^window, cbfun: windowiconifyProc) -> windowiconifyProc            #foreign glfw "glfwSetWindowIconifyCallback";
+SetDropCallback            :: proc(window: ^window, cbfun: dropProc) -> dropProc                              #foreign glfw "glfwSetDropCallback";
 
-SetKeyCallback         :: proc(window: ^window, cbfun: keyProc)                                               #foreign glfw "glfwSetKeyCallback";
-SetMouseButtonCallback :: proc(window: ^window, cbfun: mousebuttonProc)                                       #foreign glfw "glfwSetMouseButtonCallback";
-SetCursorPosCallback   :: proc(window: ^window, cbfun: cursorposProc)                                         #foreign glfw "glfwSetCursorPosCallback";
-SetScrollCallback      :: proc(window: ^window, cbfun: scrollProc)                                            #foreign glfw "glfwSetScrollCallback";
-SetCharCallback        :: proc(window: ^window, cbfun: charProc)                                              #foreign glfw "glfwSetCharCallback";
-SetCharModsCallback    :: proc(window: ^window, cbfun: charmodsProc)                                          #foreign glfw "glfwSetCharModsCallback";
-SetCursorEnterCallback :: proc(window: ^window, cbfun: cursorenterProc)                                       #foreign glfw "glfwSetCursorEnterCallback";
-SetJoystickCallback    :: proc(window: ^window, cbfun: joystickProc)                                          #foreign glfw "glfwSetJoystickCallback";
+SetKeyCallback         :: proc(window: ^window, cbfun: keyProc) -> keyProc                                    #foreign glfw "glfwSetKeyCallback";
+SetMouseButtonCallback :: proc(window: ^window, cbfun: mousebuttonProc) -> mousebuttonProc                    #foreign glfw "glfwSetMouseButtonCallback";
+SetCursorPosCallback   :: proc(window: ^window, cbfun: cursorposProc) -> cursorposProc                        #foreign glfw "glfwSetCursorPosCallback";
+SetScrollCallback      :: proc(window: ^window, cbfun: scrollProc) -> scrollProc                              #foreign glfw "glfwSetScrollCallback";
+SetCharCallback        :: proc(window: ^window, cbfun: charProc) -> charProc                                  #foreign glfw "glfwSetCharCallback";
+SetCharModsCallback    :: proc(window: ^window, cbfun: charmodsProc) -> charmodsProc                          #foreign glfw "glfwSetCharModsCallback";
+SetCursorEnterCallback :: proc(window: ^window, cbfun: cursorenterProc) -> cursorenterProc                    #foreign glfw "glfwSetCursorEnterCallback";
+SetJoystickCallback    :: proc(window: ^window, cbfun: joystickProc) -> joystickProc                          #foreign glfw "glfwSetJoystickCallback";
     
-SetErrorCallback :: proc(window: ^window, cbfun: errorProc)                                                   #foreign glfw "glfwSetErrorCallback";
+SetErrorCallback :: proc(cbfun: errorProc) -> errorProc                                                       #foreign glfw "glfwSetErrorCallback";
 
 
 /*
