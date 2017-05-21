@@ -6,4 +6,3 @@ In Linux, only require glfw to be installed (from your repo) and in the library 
 
 **CURRENT VERSION NOT TESTED IN LINUX YET, BUT IT SHOULD WORK**.
 
-NOTE: To use cloc on odin files, use `cloc --force-lang-def=cloc_definitions.txt files`.
