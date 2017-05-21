@@ -1,5 +1,8 @@
 # odin-glfw
 
-In linux, requires glfw to be installed (from your repo). **NEW VERSION NOT TESTED YET**.
+In Windows, just build normally using the latest build, as it will use the bundled .dll and import lib (works as of 21-05-2017).
 
-In windows, just build normally using the latest build, as it will use the bundled .dll (works as of 05-05-2017).
+In Linux, only require glfw to be installed (from your repo) and in the library path. 
+
+**CURRENT VERSION NOT TESTED IN LINUX YET, BUT IT SHOULD WORK**.
+
