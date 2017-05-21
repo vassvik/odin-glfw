@@ -1,5 +1,4 @@
 #import "glfw.odin";
-#import "gl.odin";
 
 #import "fmt.odin";
 #import "math.odin";
@@ -7,42 +6,29 @@
 main :: proc() {
     // init glfw
     if glfw.Init() == 0 {
-        fmt.println("Error initializing GLFW");
+        fmt.println("Error: Could not initialize GLFW.");
         return;
     }
 
-    glfw.WindowHint(glfw.SAMPLES, 4);
-    glfw.WindowHint(glfw.CONTEXT_VERSION_MAJOR, 3);
-    glfw.WindowHint(glfw.CONTEXT_VERSION_MINOR, 3);
-    glfw.WindowHint(glfw.OPENGL_PROFILE,glfw. OPENGL_CORE_PROFILE);
-    glfw.WindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
-
-    // create window
+    // create window, needs a dummy title
     title := "blah\x00";
-    window := glfw.CreateWindow(1700, 900, ^byte(&title[0]), nil, nil);
+    window := glfw.CreateWindow(1270, 720, ^byte(&title[0]), nil, nil);
     if window == nil {
-        fmt.println("Error creating window");
+        fmt.println("Error: Could not create window.");
         glfw.Terminate();
         return;
     }
 
-    glfw.MakeContextCurrent(window);
     glfw.SwapInterval(0);
 
-    // load opengl function pointers, passing on glfw.GetProcAddress
-    gl.init( proc(p: rawptr, name: string) { (^(proc() #cc_c))(p)^ = glfw.GetProcAddress(&name[0]); } );
-
     // main loop
-    gl.ClearColor(130.0/255, 140/255.0, 170/255.0, 1.0);
     for glfw.WindowShouldClose(window) == 0 {
-        // Set window title based on frame time
         calculate_frame_timings(window);
 
         glfw.PollEvents();
-
-        // drawing
-        gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+        if glfw.GetKey(window, glfw.KEY_ESCAPE) == glfw.PRESS {
+            glfw.SetWindowShouldClose(window, glfw.TRUE);
+        }
 
         glfw.SwapBuffers(window);
     }
@@ -51,10 +37,8 @@ main :: proc() {
 }
 
 
-mousewheel_callback :: proc(window: ^glfw.window, xoffset, yoffset: f64) #cc_c {
-    fmt.println(xoffset, yoffset);
-}
 
+// Bonus, calculate fps
 
 // globals for persistent timing data, placeholder for "static" variables
 _TimingStruct :: struct {

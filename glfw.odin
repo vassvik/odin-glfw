@@ -52,7 +52,7 @@ Init      :: proc() -> int                                                      
 Terminate :: proc()                                                                                           #foreign glfw "glfwTerminate";
 
 GetVersion       :: proc(major, minor, rev: ^i32)                                                             #foreign glfw "glfwGetVersion";
-GetVersionString :: proc() -> ^i8                                                                             #foreign glfw "glfwGetVersionString";
+GetVersionString :: proc() -> ^byte                                                                           #foreign glfw "glfwGetVersionString";
 
 GetMonitors            :: proc(count: ^i32) -> ^^monitor                                                      #foreign glfw "glfwGetMonitors";
 GetPrimaryMonitor      :: proc() -> ^monitor                                                                  #foreign glfw "glfwGetPrimaryMonitor";
@@ -112,7 +112,7 @@ GetInputMode :: proc(window: ^window, mode: i32) -> i32                         
 SetInputMode :: proc(window: ^window, mode, value: i32)                                                       #foreign glfw "glfwSetInputMode";
 
 GetKey         :: proc(window: ^window, key: i32) -> i32                                                      #foreign glfw "glfwGetKey";
-GetKeyName     :: proc(key, scancode: i32) -> ^i8                                                             #foreign glfw "glfwGetKeyName";
+GetKeyName     :: proc(key, scancode: i32) -> ^byte                                                           #foreign glfw "glfwGetKeyName";
 GetMouseButton :: proc(window: ^window, button: i32) -> i32                                                   #foreign glfw "glfwGetMouseButton";
 GetCursorPos   :: proc(window: ^window, xpos, ypos: ^f64)                                                     #foreign glfw "glfwGetCursorPos";
 
@@ -126,10 +126,10 @@ CreateStandardCursor :: proc(shape: i32) -> ^cursor                             
 JoystickPresent    :: proc(joy: i32) -> i32                                                                   #foreign glfw "glfwJoystickPresent";
 GetJoystickAxes    :: proc(joy: i32, count: ^i32) -> ^f32                                                     #foreign glfw "glfwGetJoystickAxes";
 GetJoystickButtons :: proc(joy: i32, count: ^i32) -> ^u8                                                      #foreign glfw "glfwGetJoystickButtons";
-GetJoystickName    :: proc(joy: i32) -> ^i8                                                                   #foreign glfw "glfwGetJoystickName";
+GetJoystickName    :: proc(joy: i32) -> ^byte                                                                 #foreign glfw "glfwGetJoystickName";
 
-SetClipboardString :: proc(window: ^window, str: ^i8)                                                         #foreign glfw "glfwSetClipboardString";
-GetClipboardString :: proc(window: ^window) -> ^i8                                                            #foreign glfw "glfwGetClipboardString";
+SetClipboardString :: proc(window: ^window, str: ^byte)                                                       #foreign glfw "glfwSetClipboardString";
+GetClipboardString :: proc(window: ^window) -> ^byte                                                          #foreign glfw "glfwGetClipboardString";
 
 GetTime           :: proc() -> f64                                                                            #foreign glfw "glfwGetTime";
 SetTime           :: proc(time: f64)                                                                          #foreign glfw "glfwSetTime";
@@ -139,10 +139,10 @@ GetTimerFrequency :: proc() -> u64                                              
 MakeContextCurrent :: proc(window: ^window)                                                                   #foreign glfw "glfwMakeContextCurrent";	
 GetCurrentContext  :: proc() -> ^window                                                                       #foreign glfw "glfwGetCurrentContext";
 GetProcAddress     :: proc(name : ^byte) -> glProc                                                            #foreign glfw "glfwGetProcAddress";
-ExtensionSupported :: proc(extension: ^i8) -> i32                                                             #foreign glfw "glfwExtensionSupported";
+ExtensionSupported :: proc(extension: ^byte) -> i32                                                           #foreign glfw "glfwExtensionSupported";
 VulkanSupported    :: proc() -> i32                                                                           #foreign glfw "glfwVulkanSupported";
 
-GetRequiredInstanceExtensions :: proc(count: ^u32) -> ^^i8                                                    #foreign glfw "glfwGetRequiredInstanceExtensions";
+GetRequiredInstanceExtensions :: proc(count: ^u32) -> ^^byte                                                  #foreign glfw "glfwGetRequiredInstanceExtensions";
 
 SetMonitorCallback         :: proc(window: ^window, cbfun: monitorProc)                                       #foreign glfw "glfwSetMonitorCallback";
 SetFramebuffersizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc)                               #foreign glfw "glfwSetFramebuffersizeCallback";
