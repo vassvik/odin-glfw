@@ -1,6 +1,6 @@
 # odin-glfw
 
-Odin bindings to GLFW 3.2.1. 
+[Odin](https://github.com/gingerBill/Odin) bindings to GLFW 3.2.1. 
 
 Contains 4 example programs:
  - `example_minimal.odin`: Creates a blank window only. Great as a template for new OpenGL projects. 
