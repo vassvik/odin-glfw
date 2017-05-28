@@ -19,8 +19,7 @@ main :: proc() {
 
     // Create a 1280x720 window, needs a dummy title.
     title := "blah\x00";
-    //window := glfw.CreateWindow(1280, 720, ^byte(&title[0]), nil, nil);
-    window := glfw.CreateWindow(1280, 720, nil, nil, nil);
+    window := glfw.CreateWindow(1280, 720, ^byte(&title[0]), nil, nil);
     if window == nil {
         fmt.println("Error: Could not create window.");
         glfw.Terminate();

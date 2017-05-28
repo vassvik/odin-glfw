@@ -32,7 +32,7 @@ init_glfw :: proc() -> (^glfw.window, bool) {
     return window, true;
 }
 
-// OpenGL constants
+// OpenGL constants, only the ones we need
 FALSE :: 0;
 TRIANGLES :: 0x0004;
 FLOAT :: 0x1406;
@@ -42,7 +42,7 @@ STATIC_DRAW :: 0x88E4;
 VERTEX_SHADER :: 0x8B31;
 FRAGMENT_SHADER :: 0x8B30;
 
-// OpenGL functions
+// OpenGL functions, only the ones we need
 Clear:                    proc(mask: u32) #cc_c;
 ClearColor:               proc(r, g, b, a: f32) #cc_c;
 
@@ -50,10 +50,10 @@ GenVertexArrays:          proc(count: i32, buffers: ^u32) #cc_c;
 GenBuffers:               proc(count: i32, buffers: ^u32) #cc_c;
 BindVertexArray:          proc(buffer: u32) #cc_c;
 BindBuffer:               proc(target: i32, buffer: u32) #cc_c;
+BufferData:               proc(target: i32, size: int, data: rawptr, usage: i32) #cc_c;
 
 VertexAttribPointer:      proc(index: u32, size, type_: i32, normalized: i32, stride: u32, pointer: rawptr) #cc_c;
 EnableVertexAttribArray:  proc(index: u32) #cc_c;
-BufferData:               proc(target: i32, size: int, data: rawptr, usage: i32) #cc_c;
 
 CreateShader:             proc(shader_type: i32) -> u32 #cc_c;
 ShaderSource:             proc(shader: u32, count: u32, str: ^^byte, length: ^i32) #cc_c;
