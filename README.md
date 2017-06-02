@@ -2,15 +2,16 @@
 
 [Odin](https://github.com/gingerBill/Odin) bindings to GLFW 3.2.1. 
 
-Contains 4 example programs:
- - `example_minimal.odin`: Creates a blank window only. Great as a template for new OpenGL projects. 
- - `example_triangle_2D.odin`: Draws a single rotating triangle in NDC coordinates, so no transformations. Essentially a bare minimum OpenGL example.
- - `example_bendable_line.odin`: Draws a stretching line segment in NDC coordinates. Another bare minimum OpenGL example.
- - `example_triangle_3D.odin`: Draws a single rotating triangle in 3D, using perspective projection. Shows simple camera controls. NOTE: Uses +Z up. 
+`odin-glfw` is not intended as an OpenGL library, so only the bare minimal is included for illustrational purposes. It is at the moment only intended as a binding library. It therefore doesn't wrap it therefore doesn't use Odin constructs where possible. This might be changed in the future. 
 
-All examples should be standalone, and each will grab the OpenGL function pointers they need using `glfwGetProcAddress`.
+Contains 3 example programs:
+ - `example_minimal.odin`: Creates a blank window only. Great as a minimal template for new OpenGL projects. 
+ - `example_mandelbrot.odin`: Classic 2D example: the Mandelbrot set, but with a twist. Essentially a bare minimum OpenGL example.
+ - `example_cube.odin`: Classic 3D example: A single rotating cube. Shows simple camera controls. NOTE: Uses +Z up. 
+
+All examples only depend on glfw.odin, and each will grab the OpenGL function pointers they need using `glfwGetProcAddress`.
 
 Comes bundled with the GLFW .dll and import .lib (for Windows). Linux only requires libglfw3.so to be available in the library path. 
 
-Works in Windows as of the 28th of May, on commit `f4924e39d487f95bbfbfbc83dd0ae237923505ae`. Should also work in Linux, but this is untested at the moment. 
+Works in Windows as of the 3rd of June, on commit `c4abb226b7951c59ee0d0b6260fd5bbbeb558e6b`. Should also work in Linux, but this is untested at the moment. 
 
