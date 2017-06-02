@@ -13,5 +13,5 @@ All examples only depend on glfw.odin, and each will grab the OpenGL function po
 
 Comes bundled with the GLFW .dll and import .lib (for Windows). Linux only requires libglfw3.so to be available in the library path. 
 
-Works in Windows as of the 3rd of June, on commit `c4abb226b7951c59ee0d0b6260fd5bbbeb558e6b`. Should also work in Linux, but this is untested at the moment. 
+Works in Windows as of the 3rd of June, on commit `c4abb226b7951c59ee0d0b6260fd5bbbeb558e6b`. Also confirmed to work in Linux (Ubuntu).
 
