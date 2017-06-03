@@ -22,7 +22,7 @@ init_glfw :: proc() -> (^glfw.window, bool) {
     glfw.WindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
 
     title := "Odin GLFW example: Rotating cube \x00";
-    window := glfw.CreateWindow(1280, 720, ^byte(&title[0]), nil, nil);
+    window := glfw.CreateWindow(1280, 720, &title[0], nil, nil);
     if window == nil {
         return nil, false;
     }
