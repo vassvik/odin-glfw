@@ -1,13 +1,15 @@
-#import "fmt.odin";
-#import "strings.odin";
-#import "glfw.odin";
+import {
+    "fmt.odin";
+    "strings.odin";
+    "glfw.odin";
+}
 
 // called every time GLFW encounters an error.
-error_callback :: proc(error: i32, desc: ^byte) #cc_c {
+proc error_callback(error: i32, desc: ^u8) #cc_c {
     fmt.printf("Error code %d:\n    %s\n", error, strings.to_odin_string(desc));
 }
 
-main :: proc() {
+proc main() {
     // Set error callback, to tell us what's wrong in case it cannot
     // initialize or create a window, or something else entirely.
     glfw.SetErrorCallback(error_callback);
@@ -18,8 +20,9 @@ main :: proc() {
     }
 
     // Create a 1280x720 window, needs a dummy title.
-    title := "blah\x00";
-    window := glfw.CreateWindow(1280, 720, &title[0], nil, nil);
+    var title = "blah\x00";
+    //defer free(title);
+    var window = glfw.CreateWindow(1280, 720, &title[0], nil, nil);
     if window == nil {
         glfw.Terminate();
         return;
