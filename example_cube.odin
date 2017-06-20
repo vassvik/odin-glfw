@@ -1,9 +1,9 @@
-import {
+import (
     "fmt.odin";
     "math.odin";
     "strings.odin";
     "glfw.odin";
-}
+)
 
 // called every time GLFW encounters an error.
 proc error_callback(error: i32, desc: ^u8) #cc_c {
@@ -37,7 +37,7 @@ proc init_glfw() -> (^glfw.window, bool) {
 
 // OpenGL constants, only the ones we need
 // more can be found in opengl_constants.odin in core/
-const {
+const (
     FALSE                = 0x0000;
     TRIANGLE_STRIP       = 0x0005;
     DEPTH_BUFFER_BIT     = 0x0100;
@@ -50,11 +50,11 @@ const {
     STATIC_DRAW          = 0x88E4;
     VERTEX_SHADER        = 0x8B31;
     FRAGMENT_SHADER      = 0x8B30;
-}
+)
 
 // OpenGL functions, only the ones we need
 // For more, look up http://docs.gl, where you can sort by version
-var {
+var (
     Enable:                   proc(cap: u32) #cc_c;
 
     ClearColor:               proc(r, g, b, a: f32) #cc_c;
@@ -88,7 +88,7 @@ var {
     UniformMatrix4fv:         proc(loc: i32, count: u32, transpose: i32, value: ^f32) #cc_c;
 
     DrawElements:             proc(mode: i32, count: u32, type_: i32, indices: rawptr) #cc_c;
-}
+)
 
 // GetProcAddress wrapper
 proc set_proc_address(p: rawptr, name: string) {

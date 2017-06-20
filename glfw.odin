@@ -1,10 +1,10 @@
-foreign_system_library {
+foreign_system_library (
     glfw "glfw"         when ODIN_OS == "linux";
     glfw "glfw3dll.lib" when ODIN_OS == "windows";
-}
+)
 
 /*** Structs/types ***/
-type {
+type (
     window  struct #ordered {};
     monitor struct #ordered {};
     cursor  struct #ordered {};
@@ -49,7 +49,7 @@ type {
     joystickProc        proc(joy, event: i32)                                   #cc_c;
 
     errorProc           proc(error: i32, description: ^u8)                      #cc_c;
-}
+)
 
 /*** Functions ***/
 foreign glfw {
@@ -181,7 +181,7 @@ foreign glfw {
 */
 
 /*** Constants ***/
-const {
+const (
     /* Versions */
     VERSION_MAJOR    = 3;
     VERSION_MINOR    = 2;
@@ -484,4 +484,4 @@ const {
 
     /*  */
     DONT_CARE = -1;
-}
+)

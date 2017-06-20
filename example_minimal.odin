@@ -1,8 +1,8 @@
-import {
+import (
     "fmt.odin";
     "strings.odin";
     "glfw.odin";
-}
+)
 
 // called every time GLFW encounters an error.
 proc error_callback(error: i32, desc: ^u8) #cc_c {
