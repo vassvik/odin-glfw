@@ -4,11 +4,11 @@ import (
     "glfw.odin";
 )
 
-proc error_callback(error: i32, desc: ^u8) #cc_c {
+error_callback :: proc(error: i32, desc: ^u8) #cc_c {
     fmt.printf("Error code %d:\n    %s\n", error, strings.to_odin_string(desc));
 }
 
-proc init_glfw() -> (^glfw.window, bool) {
+init_glfw :: proc() -> (^glfw.window, bool) {
     glfw.SetErrorCallback(error_callback);
 
     if glfw.Init() == 0 {
@@ -21,9 +21,9 @@ proc init_glfw() -> (^glfw.window, bool) {
     glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
     glfw.WindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
 
-    var title = "blah\x00";
+    title := "blah\x00";
     //defer free(title);
-    var window = glfw.CreateWindow(1280, 720, &title[0], nil, nil);
+    window := glfw.CreateWindow(1280, 720, &title[0], nil, nil);
     if window == nil {
         return nil, false;
     }
@@ -35,61 +35,58 @@ proc init_glfw() -> (^glfw.window, bool) {
 
 // OpenGL constants, only the ones we need
 // more can be found in opengl_constants.odin in core/
-const (
-    FALSE            = 0x0000;
-    TRIANGLES        = 0x0004;
-    FLOAT            = 0x1406;
-    COLOR_BUFFER_BIT = 0x4000;
-    ARRAY_BUFFER     = 0x8892;
-    STATIC_DRAW      = 0x88E4;
-    VERTEX_SHADER    = 0x8B31;
-    FRAGMENT_SHADER  = 0x8B30;
-)
+FALSE            :: 0x0000;
+TRIANGLES        :: 0x0004;
+FLOAT            :: 0x1406;
+COLOR_BUFFER_BIT :: 0x4000;
+ARRAY_BUFFER     :: 0x8892;
+STATIC_DRAW      :: 0x88E4;
+VERTEX_SHADER    :: 0x8B31;
+FRAGMENT_SHADER  :: 0x8B30;
+
 
 // OpenGL functions, only the ones we need
 // For more, look up http://docs.gl, where you can sort by version
-var (
+ClearColor: proc(r, g, b, a: f32) #cc_c;
+Clear: proc(mask: u32) #cc_c;
 
-    ClearColor: proc(r, g, b, a: f32) #cc_c;
-    Clear: proc(mask: u32) #cc_c;
+GenVertexArrays: proc(count: i32, buffers: ^u32) #cc_c;
+BindVertexArray: proc(buffer: u32) #cc_c;
+DeleteVertexArrays: proc(n: i32, arrays: ^u32) #cc_c;
 
-    GenVertexArrays: proc(count: i32, buffers: ^u32) #cc_c;
-    BindVertexArray: proc(buffer: u32) #cc_c;
-    DeleteVertexArrays: proc(n: i32, arrays: ^u32) #cc_c;
+GenBuffers: proc(count: i32, buffers: ^u32) #cc_c;
+BindBuffer: proc(target: i32, buffer: u32) #cc_c;
+BufferData: proc(target: i32, size: int, data: rawptr, usage: i32) #cc_c;
+DeleteBuffers: proc(n: i32, buffers: ^u32) #cc_c;
 
-    GenBuffers: proc(count: i32, buffers: ^u32) #cc_c;
-    BindBuffer: proc(target: i32, buffer: u32) #cc_c;
-    BufferData: proc(target: i32, size: int, data: rawptr, usage: i32) #cc_c;
-    DeleteBuffers: proc(n: i32, buffers: ^u32) #cc_c;
+EnableVertexAttribArray: proc(index: u32) #cc_c;
+VertexAttribPointer: proc(index: u32, size, type_: i32, normalized: i32, stride: u32, pointer: rawptr) #cc_c;
 
-    EnableVertexAttribArray: proc(index: u32) #cc_c;
-    VertexAttribPointer: proc(index: u32, size, type_: i32, normalized: i32, stride: u32, pointer: rawptr) #cc_c;
+CreateShader: proc(shader_type: i32) -> u32 #cc_c;
+ShaderSource: proc(shader: u32, count: u32, str: ^^u8, length: ^i32) #cc_c;
+CompileShader: proc(shader: u32) #cc_c;
+DeleteShader: proc(shader:  u32) #cc_c;
 
-    CreateShader: proc(shader_type: i32) -> u32 #cc_c;
-    ShaderSource: proc(shader: u32, count: u32, str: ^^u8, length: ^i32) #cc_c;
-    CompileShader: proc(shader: u32) #cc_c;
-    DeleteShader: proc(shader:  u32) #cc_c;
+CreateProgram: proc() -> u32 #cc_c;
+AttachShader: proc(program, shader: u32) #cc_c;
+LinkProgram: proc(program: u32) #cc_c;
+DeleteProgram: proc(program: u32) #cc_c;
 
-    CreateProgram: proc() -> u32 #cc_c;
-    AttachShader: proc(program, shader: u32) #cc_c;
-    LinkProgram: proc(program: u32) #cc_c;
-    DeleteProgram: proc(program: u32) #cc_c;
+UseProgram: proc(program: u32) #cc_c;
+GetUniformLocation: proc(program: u32, name: ^u8) -> i32 #cc_c;
+Uniform1f: proc(loc: i32, v0: f32) #cc_c;
 
-    UseProgram: proc(program: u32) #cc_c;
-    GetUniformLocation: proc(program: u32, name: ^u8) -> i32 #cc_c;
-    Uniform1f: proc(loc: i32, v0: f32) #cc_c;
+DrawArrays: proc(mode, first: i32, count: u32) #cc_c;
 
-    DrawArrays: proc(mode, first: i32, count: u32) #cc_c;
-)
 
 
 // GetProcAddress wrapper
-proc set_proc_address(p: rawptr, name: string) {
-    (^(proc() #cc_c))(p)^ = glfw.GetProcAddress(&name[0]);
+set_proc_address :: proc(p: rawptr, name: string) {
+    ^rawptr(p)^ = rawptr(glfw.GetProcAddress(&name[0]));
 }
 
 // Get all the relevant OpenGL function pointers
-proc get_gl_functions() {
+get_gl_functions :: proc() {
     set_proc_address(&ClearColor,              "glClearColor\x00");
     set_proc_address(&Clear,                   "glClear\x00");
 
@@ -123,8 +120,8 @@ proc get_gl_functions() {
 }
 
 // compiling and linking some hardcoded trivial shaders
-proc load_shaders() -> u32 {
-    var vertex_shader_source = 
+load_shaders :: proc() -> u32 {
+    vertex_shader_source := 
     `#version 330 core
 
     layout(location = 0) in vec2 vertexPosition;
@@ -134,7 +131,7 @@ proc load_shaders() -> u32 {
     }
     `;
 
-    var fragment_shader_source = 
+    fragment_shader_source := 
     `#version 330 core
 
     uniform float time;
@@ -195,11 +192,11 @@ proc load_shaders() -> u32 {
     }
     `;
 
-    var vertex_shader_length = i32(len(vertex_shader_source));
-    var fragment_shader_length = i32(len(fragment_shader_source));
+    vertex_shader_length := i32(len(vertex_shader_source));
+    fragment_shader_length := i32(len(fragment_shader_source));
 
-    var vertex_shader_id = CreateShader(VERTEX_SHADER);
-    var fragment_shader_id = CreateShader(FRAGMENT_SHADER);
+    vertex_shader_id := CreateShader(VERTEX_SHADER);
+    fragment_shader_id := CreateShader(FRAGMENT_SHADER);
 
     defer {
         DeleteShader(vertex_shader_id);
@@ -212,7 +209,7 @@ proc load_shaders() -> u32 {
     CompileShader(vertex_shader_id);
     CompileShader(fragment_shader_id);
 
-    var program = CreateProgram();
+    program := CreateProgram();
     AttachShader(program, vertex_shader_id);
     AttachShader(program, fragment_shader_id);
     LinkProgram(program);
@@ -220,13 +217,13 @@ proc load_shaders() -> u32 {
     return program;
 }
 
-proc create_buffers() -> (u32, u32) {
-    var vao: u32;
+create_buffers :: proc() -> (u32, u32) {
+    vao: u32;
     GenVertexArrays(1, &vao);
     BindVertexArray(vao);
 
     // a quad, two triangles covering the whole screen in NDC
-    var v = [..]f32{
+    v := [..]f32{
         -1.0, -1.0, 
          1.0, -1.0, 
         -1.0,  1.0,
@@ -235,7 +232,7 @@ proc create_buffers() -> (u32, u32) {
          1.0,  1.0,
     };
 
-    var vbo: u32;
+    vbo: u32;
     GenBuffers(1, &vbo);
     BindBuffer(ARRAY_BUFFER, vbo);
     BufferData(ARRAY_BUFFER, size_of(v), &v[0], STATIC_DRAW);
@@ -246,8 +243,8 @@ proc create_buffers() -> (u32, u32) {
     return vao, vbo;
 }
 
-proc main() {
-    var window, success = init_glfw();
+main :: proc() {
+    window, success := init_glfw();
     if !success {
         glfw.Terminate();
         return;
@@ -256,10 +253,10 @@ proc main() {
 
     get_gl_functions();
 
-    var program = load_shaders();
+    program := load_shaders();
     defer DeleteProgram(program);
 
-    var vao, vbo = create_buffers();
+    vao, vbo := create_buffers();
     defer {
         DeleteBuffers(1, &vbo);
         DeleteVertexArrays(1, &vao);
@@ -267,7 +264,7 @@ proc main() {
 
     // wrapper to use GetUniformLocation with an Odin string
     // @NOTE: str has to be zero-terminated, so add a \x00 at the end
-    proc GetUniformLocation_(program: u32, str: string) -> i32 {
+    GetUniformLocation_ :: proc(program: u32, str: string) -> i32 {
         return GetUniformLocation(program, &str[0]);;
     }
 

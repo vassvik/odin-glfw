@@ -5,11 +5,11 @@ import (
 )
 
 // called every time GLFW encounters an error.
-proc error_callback(error: i32, desc: ^u8) #cc_c {
+error_callback :: proc(error: i32, desc: ^u8) #cc_c {
     fmt.printf("Error code %d:\n    %s\n", error, strings.to_odin_string(desc));
 }
 
-proc main() {
+main :: proc() {
     // Set error callback, to tell us what's wrong in case it cannot
     // initialize or create a window, or something else entirely.
     glfw.SetErrorCallback(error_callback);
@@ -20,9 +20,9 @@ proc main() {
     }
 
     // Create a 1280x720 window, needs a dummy title.
-    var title = "blah\x00";
+    title := "blah\x00";
     //defer free(title);
-    var window = glfw.CreateWindow(1280, 720, &title[0], nil, nil);
+    window := glfw.CreateWindow(1280, 720, &title[0], nil, nil);
     if window == nil {
         glfw.Terminate();
         return;
