@@ -11,7 +11,7 @@ Contains 3 example programs:
 
 All examples only depend on glfw.odin, and each will grab the OpenGL function pointers they need using `glfwGetProcAddress`.
 
-Comes bundled with the GLFW .dll and import .lib (for Windows). Linux only requires libglfw3.so to be available in the library path. 
+Comes bundled with the GLFW .dll and import .lib (for Windows). Linux only requires libglfw3.so to be available in the system library path (defined in `/etc/ld.so.conf.d/`).
 
 Works in Windows and Linux as of the 30th of June, on commit `33f4af2e195fcaa7a5b4fa7ea25a464f3597f18c`. Should also work on MacOS. 
 
