@@ -190,7 +190,7 @@ create_buffers :: proc() -> (u32, u32, u32) {
     BindVertexArray(vao);
 
     // a 2x2x2 cube, using triangle strips and indices
-    cubeVertices := [..]f32 {
+    cubeVertices := [...]f32 {
         -1.0, -1.0,  1.0,
          1.0, -1.0,  1.0,
         -1.0,  1.0,  1.0,
@@ -201,7 +201,7 @@ create_buffers :: proc() -> (u32, u32, u32) {
          1.0,  1.0, -1.0,
     };
 
-    cubeIndices := [..]u16{
+    cubeIndices := [...]u16{
         // TRIANGLE_STRIP, 14 indices = 12 triangles
         0, 1, 2, 3, 7, 1, 5, 4, 7, 6, 2, 4, 0, 1
     };

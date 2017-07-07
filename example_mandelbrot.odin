@@ -223,7 +223,7 @@ create_buffers :: proc() -> (u32, u32) {
     BindVertexArray(vao);
 
     // a quad, two triangles covering the whole screen in NDC
-    v := [..]f32{
+    v := [...]f32{
         -1.0, -1.0, 
          1.0, -1.0, 
         -1.0,  1.0,
