@@ -9,19 +9,19 @@ monitor :: struct #ordered {};
 cursor  :: struct #ordered {};
 
 vidmode :: struct #ordered {
-    width, height:                i32,
-    redBits, greenBits, blueBits: i32,
-    refreshRate:                  i32
+    width, height:                i32;
+    redBits, greenBits, blueBits: i32;
+    refreshRate:                  i32;
 };
 
 gammaramp :: struct #ordered {
-    red, green, blue: ^u16,
-    size:              u32
+    red, green, blue: ^u16;
+    size:              u32;
 };
 
 image :: struct #ordered {
-    width, height:  i32,
-    pixels:        ^u8
+    width, height:  i32;
+    pixels:        ^u8;
 };
 
 /*** Procedure type declarations ***/
@@ -169,6 +169,10 @@ foreign glfw {
     SetErrorCallback :: proc(cbfun: errorProc) -> errorProc                                                   #link_name "glfwSetErrorCallback" ---;
 }
 
+// Odin Wrappers
+CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window {
+    return CreateWindow(width, height, &title[0], monitor, share);
+}
 
 /*
 // Skipping Vulkan for now..
