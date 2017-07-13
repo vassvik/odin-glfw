@@ -169,8 +169,6 @@ foreign glfw {
     SetErrorCallback :: proc(cbfun: errorProc) -> errorProc                                                   #link_name "glfwSetErrorCallback" ---;
 }
 
-create_window :: CreateWindow;
-
 // Odin Wrappers
 CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window {
     return CreateWindow(width, height, &title[0], monitor, share);
