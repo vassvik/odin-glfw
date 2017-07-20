@@ -23,8 +23,7 @@ init_glfw :: proc() -> (^glfw.window, bool) {
     glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
     glfw.WindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
 
-    title := "Odin GLFW example: Rotating cube \x00";
-    window := glfw.CreateWindow(1280, 720, &title[0], nil, nil);
+    window := glfw.CreateWindow(1280, 720, "Odin GLFW example: Rotating cube", nil, nil);
     if window == nil {
         return nil, false;
     }
@@ -88,7 +87,7 @@ DrawElements:             proc(mode: i32, count: u32, type_: i32, indices: rawpt
 
 // GetProcAddress wrapper
 set_proc_address :: proc(p: rawptr, name: string) {
-    ^rawptr(p)^ = rawptr(glfw.GetProcAddress(&name[0]));
+    (cast(^rawptr)p)^ = rawptr(glfw.GetProcAddress(&name[0]));
 }
 
 // Get all the relevant OpenGL function pointers
@@ -170,8 +169,8 @@ load_shaders :: proc() -> u32 {
         DeleteShader(fragment_shader_id);
     }
 
-    ShaderSource(vertex_shader_id, 1, ^^u8(&vertex_shader_source), &vertex_shader_length);
-    ShaderSource(fragment_shader_id, 1, ^^u8(&fragment_shader_source), &fragment_shader_length);
+    ShaderSource(vertex_shader_id, 1, cast(^^u8)&vertex_shader_source, &vertex_shader_length);
+    ShaderSource(fragment_shader_id, 1, cast(^^u8)&fragment_shader_source, &fragment_shader_length);
 
     CompileShader(vertex_shader_id);
     CompileShader(fragment_shader_id);
@@ -226,7 +225,7 @@ create_buffers :: proc() -> (u32, u32, u32) {
 // camera coordinate system, namely right (X), up (Y) and forward (-Z).
 // Hopefully this one gets added to core/math.odin eventually.
 view :: proc(r, u, f, p: math.Vec3) -> math.Mat4 { 
-    return math.Mat4 {
+    return math.Mat4 { // HERE
         {+r.x, +u.x, -f.x, 0.0},
         {+r.y, +u.y, -f.y, 0.0},
         {+r.z, +u.z, -f.z, 0.0},
