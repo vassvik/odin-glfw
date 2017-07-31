@@ -145,7 +145,7 @@ foreign glfw {
     ExtensionSupported :: proc(extension: ^u8) -> i32                                                         #link_name "glfwExtensionSupported" ---;
     VulkanSupported :: proc() -> i32                                                                          #link_name "glfwVulkanSupported" ---;
 
-   GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^^u8                                                #link_name "glfwGetRequiredInstanceExtensions" ---;
+    GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^^u8                                                #link_name "glfwGetRequiredInstanceExtensions" ---;
 
     SetMonitorCallback :: proc(window: ^window, cbfun: monitorProc) -> monitorProc                            #link_name "glfwSetMonitorCallback" ---;
     SetFramebuffersizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc) -> framebuffersizeProc    #link_name "glfwSetFramebuffersizeCallback" ---;
@@ -170,8 +170,58 @@ foreign glfw {
 }
 
 // Odin Wrappers
-CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window {
+
+import (
+    "fmt.odin";
+    "math.odin";
+)
+
+CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window #inline {
     return CreateWindow(width, height, &title[0], monitor, share);
+}
+
+SetWindowTitle :: proc(window: ^window, fmt_string: string, args: ...any) {
+    if len(fmt_string) >= 256 {
+        SetWindowTitle(window, "Too long title format string");
+        return;  
+    }
+    buf: [1024]u8;
+    title := fmt.bprintf(buf[..], fmt_string, ...args);
+    SetWindowTitle(window, &title[0]);
+}
+
+// globals for persistent timing data, placeholder for "static" variables
+_TimingStruct :: struct {
+    t1, avg_dt, avg_dt2, last_frame_time : f64;
+    num_samples, counter: int;
+}
+persistent_timing_data := _TimingStruct{0.0, 0.0, 0.0, 1.0/60, 60, 0};
+
+calculate_frame_timings :: proc(window: ^window) {
+    using persistent_timing_data;
+    t2 := GetTime();
+    dt := t2-t1;
+    t1 = t2;
+
+    avg_dt += dt;
+    avg_dt2 += dt*dt;
+    counter += 1;
+
+    last_frame_time = dt;
+
+    if counter == num_samples {
+        avg_dt  /= f64(num_samples);
+        avg_dt2 /= f64(num_samples);
+        std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt); // multiply by 1000 to transform to milliseconds
+        ste_dt := std_dt/math.sqrt(f64(num_samples));
+
+        SetWindowTitle(window, "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
+        
+        num_samples = int(1.0/avg_dt);
+        avg_dt = 0.0;
+        avg_dt2 = 0.0;
+        counter = 0;
+    }
 }
 
 /*
