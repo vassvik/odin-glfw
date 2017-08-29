@@ -1,7 +1,5 @@
-foreign_system_library (
-    glfw "glfw"         when ODIN_OS == "linux";
-    glfw "glfw3dll.lib" when ODIN_OS == "windows";
-)
+foreign_system_library glfw "glfw"         when ODIN_OS == "linux";
+foreign_system_library glfw "glfw3dll.lib" when ODIN_OS == "windows";
 
 /*** Structs/types ***/
 window  :: struct #ordered {};
