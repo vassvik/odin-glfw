@@ -169,10 +169,8 @@ foreign glfw {
 
 // Odin Wrappers
 
-import (
-    "fmt.odin";
-    "math.odin";
-)
+import "fmt.odin";
+import "math.odin";
 
 CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window #inline {
     return CreateWindow(width, height, &title[0], monitor, share);
