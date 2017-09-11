@@ -1,5 +1,5 @@
-foreign_system_library glfw "glfw"         when ODIN_OS == "linux";
-foreign_system_library glfw "glfw3dll.lib" when ODIN_OS == "windows";
+when ODIN_OS == "linux" do foreign_system_library glfw "glfw";
+when ODIN_OS == "windows" do foreign_system_library glfw "glfw3dll.lib";
 
 /*** Structs/types ***/
 window  :: struct #ordered {};
@@ -169,8 +169,8 @@ foreign glfw {
 
 // Odin Wrappers
 
-import "fmt.odin";
-import "math.odin";
+import "core:fmt.odin";
+import "core:math.odin";
 
 CreateWindow :: proc(width, height: i32, title: string, monitor: ^monitor, share: ^window) -> ^window #inline {
     return CreateWindow(width, height, &title[0], monitor, share);
