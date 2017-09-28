@@ -7,19 +7,19 @@ monitor :: struct #ordered {};
 cursor  :: struct #ordered {};
 
 vidmode :: struct #ordered {
-    width, height:                i32;
-    redBits, greenBits, blueBits: i32;
-    refreshRate:                  i32;
+    width, height:                i32,
+    redBits, greenBits, blueBits: i32,
+    refreshRate:                  i32,
 };
 
 gammaramp :: struct #ordered {
-    red, green, blue: ^u16;
-    size:              u32;
+    red, green, blue: ^u16,
+    size:              u32,
 };
 
 image :: struct #ordered {
-    width, height:  i32;
-    pixels:        ^u8;
+    width, height:  i32,
+    pixels:        ^u8,
 };
 
 /*** Procedure type declarations ***/
@@ -188,8 +188,8 @@ SetWindowTitle :: proc(window: ^window, fmt_string: string, args: ...any) {
 
 // globals for persistent timing data, placeholder for "static" variables
 _TimingStruct :: struct {
-    t1, avg_dt, avg_dt2, last_frame_time : f64;
-    num_samples, counter: int;
+    t1, avg_dt, avg_dt2, last_frame_time : f64,
+    num_samples, counter: int,
 }
 persistent_timing_data := _TimingStruct{0.0, 0.0, 0.0, 1.0/60, 60, 0};
 
@@ -208,7 +208,7 @@ calculate_frame_timings :: proc(window: ^window) {
     if counter == num_samples {
         avg_dt  /= f64(num_samples);
         avg_dt2 /= f64(num_samples);
-        std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt); // multiply by 1000 to transform to milliseconds
+        std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
         ste_dt := std_dt/math.sqrt(f64(num_samples));
 
         SetWindowTitle(window, "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
