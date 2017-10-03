@@ -26,15 +26,15 @@ image :: struct #ordered {
 glProc              :: proc()                                                  #cc_c;
 vkProc              :: proc()                                                  #cc_c;
 
-windowposProc       :: proc(window: ^window, xpos, ypos: i32)                  #cc_c;
-windowsizeProc      :: proc(window: ^window, width, height: i32)               #cc_c;
-windowcloseProc     :: proc(window: ^window)                                   #cc_c;
+windowiconifyProc   :: proc(window: ^window, iconified: i32)                   #cc_c;
 windowrefreshProc   :: proc(window: ^window)                                   #cc_c;
 windowfocusProc     :: proc(window: ^window, focused: i32)                     #cc_c;
-windowiconifyProc   :: proc(window: ^window, iconified: i32)                   #cc_c;
-monitorProc         :: proc(window: ^window)                                   #cc_c;
+windowcloseProc     :: proc(window: ^window)                                   #cc_c;
+windowsizeProc      :: proc(window: ^window, width, height: i32)               #cc_c;
+windowposProc       :: proc(window: ^window, xpos, ypos: i32)                  #cc_c;
 framebuffersizeProc :: proc(window: ^window, width, height: i32)               #cc_c;
 dropProc            :: proc(window: ^window, count: i32, paths: ^^u8)          #cc_c;
+monitorProc         :: proc(window: ^window)                                   #cc_c;
 
 keyProc             :: proc(window: ^window, key, scancode, action, mods: i32) #cc_c;
 mousebuttonProc     :: proc(window: ^window, button, action, mods: i32)        #cc_c;
@@ -145,15 +145,15 @@ foreign glfw {
 
     GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^^u8                                                #link_name "glfwGetRequiredInstanceExtensions" ---;
 
-    SetMonitorCallback :: proc(window: ^window, cbfun: monitorProc) -> monitorProc                            #link_name "glfwSetMonitorCallback" ---;
-    SetFramebuffersizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc) -> framebuffersizeProc    #link_name "glfwSetFramebuffersizeCallback" ---;
-    SetWindowPosCallback :: proc(window: ^window, cbfun: windowposProc) -> windowposProc                      #link_name "glfwSetWindowPosCallback" ---;
-    SetWindowSizeCallback :: proc(window: ^window, cbfun: windowsizeProc) -> windowsizeProc                   #link_name "glfwSetWindowSizeCallback" ---;
-    SetWindowCloseCallback :: proc(window: ^window, cbfun: windowcloseProc) -> windowcloseProc                #link_name "glfwSetWindowCloseCallback" ---;
+    SetWindowIconifyCallback :: proc(window: ^window, cbfun: windowiconifyProc) -> windowiconifyProc          #link_name "glfwSetWindowIconifyCallback" ---;
     SetWindowRefreshCallback :: proc(window: ^window, cbfun: windowrefreshProc) -> windowrefreshProc          #link_name "glfwSetWindowRefreshCallback" ---;
     SetWindowFocusCallback :: proc(window: ^window, cbfun: windowfocusProc) -> windowfocusProc                #link_name "glfwSetWindowFocusCallback" ---;
-    SetWindowIconifyCallback :: proc(window: ^window, cbfun: windowiconifyProc) -> windowiconifyProc          #link_name "glfwSetWindowIconifyCallback" ---;
+    SetWindowCloseCallback :: proc(window: ^window, cbfun: windowcloseProc) -> windowcloseProc                #link_name "glfwSetWindowCloseCallback" ---;
+    SetWindowSizeCallback :: proc(window: ^window, cbfun: windowsizeProc) -> windowsizeProc                   #link_name "glfwSetWindowSizeCallback" ---;
+    SetWindowPosCallback :: proc(window: ^window, cbfun: windowposProc) -> windowposProc                      #link_name "glfwSetWindowPosCallback" ---;
+    SetFramebufferSizeCallback :: proc(window: ^window, cbfun: framebuffersizeProc) -> framebuffersizeProc    #link_name "glfwSetFramebufferSizeCallback" ---;
     SetDropCallback :: proc(window: ^window, cbfun: dropProc) -> dropProc                                     #link_name "glfwSetDropCallback" ---;
+    SetMonitorCallback :: proc(window: ^window, cbfun: monitorProc) -> monitorProc                            #link_name "glfwSetMonitorCallback" ---;
 
     SetKeyCallback :: proc(window: ^window, cbfun: keyProc) -> keyProc                                        #link_name "glfwSetKeyCallback" ---;
     SetMouseButtonCallback :: proc(window: ^window, cbfun: mousebuttonProc) -> mousebuttonProc                #link_name "glfwSetMouseButtonCallback" ---;
