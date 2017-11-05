@@ -7,9 +7,12 @@ Monitor_Handle :: rawptr;
 Cursor_Handle  :: rawptr;
 
 Vid_Mode :: struct #ordered {
-    width, height:                   i32,
-    red_bits, green_bits, blue_bits: i32,
-    refresh_rate:                    i32,
+    width:        i32,
+    height:       i32,
+    red_bits:     i32,
+    green_bits:   i32,
+    blue_bits:    i32,
+    refresh_rate: i32,
 };
 
 Gamma_Ramp :: struct #ordered {
@@ -23,26 +26,26 @@ Image :: struct #ordered {
 };
 
 /*** Procedure type declarations ***/
-Windowiconify_Proc   :: #type proc "c" (window: Window_Handle, iconified: i32);
-Windowrefresh_Proc   :: #type proc "c" (window: Window_Handle);
-Windowfocus_Proc     :: #type proc "c" (window: Window_Handle, focused: i32);
-Windowclose_Proc     :: #type proc "c" (window: Window_Handle);
-Windowsize_Proc      :: #type proc "c" (window: Window_Handle, width, height: i32);
-Windowpos_Proc       :: #type proc "c" (window: Window_Handle, xpos, ypos: i32);
-Framebuffersize_Proc :: #type proc "c" (window: Window_Handle, width, height: i32);
-Drop_Proc            :: #type proc "c" (window: Window_Handle, count: i32, paths: ^^u8);
-Monitor_Proc         :: #type proc "c" (window: Window_Handle);
+Window_Iconify_Proc   :: #type proc "c" (window: Window_Handle, iconified: i32);
+Window_Refresh_Proc   :: #type proc "c" (window: Window_Handle);
+Window_Focus_Proc     :: #type proc "c" (window: Window_Handle, focused: i32);
+Window_Close_Proc     :: #type proc "c" (window: Window_Handle);
+Window_Size_Proc      :: #type proc "c" (window: Window_Handle, width, height: i32);
+Window_Pos_Proc       :: #type proc "c" (window: Window_Handle, xpos, ypos: i32);
+Framebuffer_Size_Proc :: #type proc "c" (window: Window_Handle, width, height: i32);
+Drop_Proc             :: #type proc "c" (window: Window_Handle, count: i32, paths: ^^u8);
+Monitor_Proc          :: #type proc "c" (window: Window_Handle);
 
-Key_Proc             :: #type proc "c" (window: Window_Handle, key, scancode, action, mods: i32);
-Mousebutton_Proc     :: #type proc "c" (window: Window_Handle, button, action, mods: i32);
-Cursorpos_Proc       :: #type proc "c" (window: Window_Handle, xpos,  ypos: f64);
-Scroll_Proc          :: #type proc "c" (window: Window_Handle, xoffset, yoffset: f64);
-Char_Proc            :: #type proc "c" (window: Window_Handle, codepoint: u32);
-Charmods_Proc        :: #type proc "c" (window: Window_Handle, codepoint: u32, mods: i32);
-Cursorenter_Proc     :: #type proc "c" (window: Window_Handle, entered: i32);
-Joystick_Proc        :: #type proc "c" (joy, event: i32);
+Key_Proc              :: #type proc "c" (window: Window_Handle, key, scancode, action, mods: i32);
+Mouse_Button_Proc     :: #type proc "c" (window: Window_Handle, button, action, mods: i32);
+Cursor_Pos_Proc       :: #type proc "c" (window: Window_Handle, xpos,  ypos: f64);
+Scroll_Proc           :: #type proc "c" (window: Window_Handle, xoffset, yoffset: f64);
+Char_Proc             :: #type proc "c" (window: Window_Handle, codepoint: u32);
+Char_Mods_Proc        :: #type proc "c" (window: Window_Handle, codepoint: u32, mods: i32);
+Cursor_Enter_Proc     :: #type proc "c" (window: Window_Handle, entered: i32);
+Joystick_Proc         :: #type proc "c" (joy, event: i32);
 
-Error_Proc           :: #type proc "c" (error: i32, description: ^u8);
+Error_Proc            :: #type proc "c" (error: i32, description: ^u8);
 
 /*** Functions ***/
 @(default_calling_convention="c", link_prefix="glfw")
@@ -50,43 +53,40 @@ foreign glfw {
     Init      :: proc() -> i32 ---;
     Terminate :: proc() ---;
 
-    GetVersion        :: proc(major, minor, rev: ^i32) ---;
-    GetVersionString :: proc() -> ^u8 ---;
+    GetVersion :: proc(major, minor, rev: ^i32) ---;
 
-    GetMonitors              :: proc(count: ^i32) -> ^Monitor_Handle ---;
-    GetPrimaryMonitor       :: proc() -> Monitor_Handle ---;
-    GetMonitorPos           :: proc(monitor: Monitor_Handle, xpos, ypos: ^i32) ---;
+    GetPrimaryMonitor      :: proc() -> Monitor_Handle ---;
+    GetMonitors            :: proc(count: ^i32) -> ^Monitor_Handle ---;
+    GetMonitorPos          :: proc(monitor: Monitor_Handle, xpos, ypos: ^i32) ---;
     GetMonitorPhysicalSize :: proc(monitor: Monitor_Handle, widthMM, heightMM: ^i32) ---;
-    GetMonitorName          :: proc(monitor: Monitor_Handle) -> ^i8 ---;
 
-    GetVideoModes :: proc(monitor: Monitor_Handle, count: ^i32) -> ^Vid_Mode ---;
     GetVideoMode  :: proc(monitor: Monitor_Handle) -> ^Vid_Mode ---;
 
-    SetGamma      :: proc(monitor: Monitor_Handle, gamma: f32) ---;
+    SetGamma     :: proc(monitor: Monitor_Handle, gamma: f32) ---;
     GetGammaRamp :: proc(monitor: Monitor_Handle) -> ^Gamma_Ramp ---;
     SetGammaRamp :: proc(monitor: Monitor_Handle, ramp: ^Gamma_Ramp) ---;
 
     CreateWindow  :: proc(width, height: i32, title: ^u8, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle ---;
     DestroyWindow :: proc(window: Window_Handle) ---;
 
-    WindowHint          :: proc(hint, value: i32) ---;
+    WindowHint         :: proc(hint, value: i32) ---;
     DefaultWindowHints :: proc() ---;
 
-    WindowShouldClose     :: proc(window: Window_Handle) -> i32 ---;
+    WindowShouldClose    :: proc(window: Window_Handle) -> i32 ---;
     SetWindowShouldClose :: proc(window: Window_Handle, value: i32) ---;
 
     SwapInterval :: proc(interval: i32) ---;
     SwapBuffers  :: proc(window: Window_Handle) ---;
 
-    SetWindowTitle        :: proc(window: Window_Handle, title: ^u8) ---;
-    SetWindowIcon         :: proc(window: Window_Handle, count: i32, images: ^Image) ---;
-    GetWindowPos          :: proc(window: Window_Handle, xpos, ypos: ^i32) ---;
-    SetWindowPos          :: proc(window: Window_Handle, xpos, ypos: i32) ---;
-    GetWindowSize         :: proc(window: Window_Handle, width, height: ^i32) ---;
+    SetWindowTitle       :: proc(window: Window_Handle, title: ^u8) ---;
+    SetWindowIcon        :: proc(window: Window_Handle, count: i32, images: ^Image) ---;
+    SetWindowPos         :: proc(window: Window_Handle, xpos, ypos: i32) ---;
     SetWindowSizeLimits  :: proc(window: Window_Handle, minwidth, minheight, maxwidth, maxheight: i32) ---;
     SetWindowAspectRatio :: proc(window: Window_Handle, numer, denom: i32) ---;
-    SetWindowSize         :: proc(window: Window_Handle, width, height: i32) ---;
-    GetFramebufferSize    :: proc(window: Window_Handle, width, height: ^i32) ---;
+    SetWindowSize        :: proc(window: Window_Handle, width, height: i32) ---;
+    GetWindowPos         :: proc(window: Window_Handle, xpos, ypos: ^i32) ---;
+    GetWindowSize        :: proc(window: Window_Handle, width, height: ^i32) ---;
+    GetFramebufferSize   :: proc(window: Window_Handle, width, height: ^i32) ---;
     GetWindowFrameSize   :: proc(window: Window_Handle, left, top, right, bottom: ^i32) ---;
 
     IconifyWindow  :: proc(window: Window_Handle) ---;
@@ -96,71 +96,65 @@ foreign glfw {
     HideWindow     :: proc(window: Window_Handle) ---;
     FocusWindow    :: proc(window: Window_Handle) ---;
 
-    GetWindowMonitor      :: proc(window: Window_Handle) ---;
-    SetWindowMonitor      :: proc(window: Window_Handle, monitor: Monitor_Handle, xpos, ypos, width, height, refreshRate: i32) ---;
-    GetWindowAttrib       :: proc(window: Window_Handle, attrib: i32) -> i32 ---;
+    GetWindowMonitor     :: proc(window: Window_Handle) ---;
+    SetWindowMonitor     :: proc(window: Window_Handle, monitor: Monitor_Handle, xpos, ypos, width, height, refresh_rate: i32) ---;
+    GetWindowAttrib      :: proc(window: Window_Handle, attrib: i32) -> i32 ---;
     SetWindowUserPointer :: proc(window: Window_Handle, pointer: rawptr) ---;
     GetWindowUserPointer :: proc(window: Window_Handle) -> rawptr ---;
 
-    PollEvents         :: proc() ---;
-    WaitEvents         :: proc() ---;
+    PollEvents        :: proc() ---;
+    WaitEvents        :: proc() ---;
     WaitEventsTimeout :: proc(timeout: f64) ---;
     PostEmptyEvent    :: proc() ---;
 
     GetInputMode :: proc(window: Window_Handle, mode: i32) -> i32 ---;
     SetInputMode :: proc(window: Window_Handle, mode, value: i32) ---;
 
-    GetKey          :: proc(window: Window_Handle, key: i32) -> i32 ---;
-    GetKeyName     :: proc(key, scancode: i32) -> ^u8 ---;
+    GetKey         :: proc(window: Window_Handle, key: i32) -> i32 ---;
     GetMouseButton :: proc(window: Window_Handle, button: i32) -> i32 ---;
     GetCursorPos   :: proc(window: Window_Handle, xpos, ypos: ^f64) ---;
+    SetCursorPos   :: proc(window: Window_Handle, xpos, ypos: f64) ---;
 
-    SetCursorPos :: proc(window: Window_Handle, xpos, ypos: f64) ---;
-
-    CreateCursor          :: proc(image: ^Image, xhot, yhot: i32) -> Cursor_Handle ---;
-    DestroyCursor         :: proc(cursor: Cursor_Handle) ---;
-    SetCursor             :: proc(window: Window_Handle, cursor: Cursor_Handle) ---;
+    CreateCursor         :: proc(image: ^Image, xhot, yhot: i32) -> Cursor_Handle ---;
+    DestroyCursor        :: proc(cursor: Cursor_Handle) ---;
+    SetCursor            :: proc(window: Window_Handle, cursor: Cursor_Handle) ---;
     CreateStandardCursor :: proc(shape: i32) -> Cursor_Handle ---;
 
-    JoystickPresent     :: proc(joy: i32) -> i32 ---;
     GetJoystickAxes    :: proc(joy: i32, count: ^i32) -> ^f32 ---;
     GetJoystickButtons :: proc(joy: i32, count: ^i32) -> ^u8 ---;
-    GetJoystickName    :: proc(joy: i32) -> ^u8 ---;
 
     SetClipboardString :: proc(window: Window_Handle, str: ^u8) ---;
-    GetClipboardString :: proc(window: Window_Handle) -> ^u8 ---;
 
-    GetTime            :: proc() -> f64 ---;
-    SetTime            :: proc(time: f64) ---;
+    GetTime           :: proc() -> f64 ---;
+    SetTime           :: proc(time: f64) ---;
     GetTimerValue     :: proc() -> u64 ---;
     GetTimerFrequency :: proc() -> u64 ---;
 
     MakeContextCurrent :: proc(window: Window_Handle) ---;
     GetCurrentContext  :: proc() -> Window_Handle ---;
     GetProcAddress     :: proc(name : ^u8) -> rawptr ---;
-    ExtensionSupported  :: proc(extension: ^u8) -> i32 ---;
-    VulkanSupported     :: proc() -> i32 ---;
+    ExtensionSupported :: proc(extension: ^u8) -> i32 ---;
 
     GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^^u8 ---;
 
-    SetWindowIconifyCallback   :: proc(window: Window_Handle, cbfun: Windowiconify_Proc) -> Windowiconify_Proc ---;
-    SetWindowRefreshCallback   :: proc(window: Window_Handle, cbfun: Windowrefresh_Proc) -> Windowrefresh_Proc ---;
-    SetWindowFocusCallback     :: proc(window: Window_Handle, cbfun: Windowfocus_Proc) -> Windowfocus_Proc ---;
-    SetWindowCloseCallback     :: proc(window: Window_Handle, cbfun: Windowclose_Proc) -> Windowclose_Proc ---;
-    SetWindowSizeCallback      :: proc(window: Window_Handle, cbfun: Windowsize_Proc) -> Windowsize_Proc ---;
-    SetWindowPosCallback       :: proc(window: Window_Handle, cbfun: Windowpos_Proc) -> Windowpos_Proc ---;
-    SetFramebufferSizeCallback :: proc(window: Window_Handle, cbfun: Framebuffersize_Proc) -> Framebuffersize_Proc ---;
-    SetDropCallback             :: proc(window: Window_Handle, cbfun: Drop_Proc) -> Drop_Proc ---;
-    SetMonitorCallback          :: proc(window: Window_Handle, cbfun: Monitor_Proc) -> Monitor_Proc ---;
+    SetWindowIconifyCallback   :: proc(window: Window_Handle, cbfun: Window_Iconify_Proc) -> Window_Iconify_Proc ---;
+    SetWindowRefreshCallback   :: proc(window: Window_Handle, cbfun: Window_Refresh_Proc) -> Window_Refresh_Proc ---;
+    SetWindowFocusCallback     :: proc(window: Window_Handle, cbfun: Window_Focus_Proc) -> Window_Focus_Proc ---;
+    SetWindowCloseCallback     :: proc(window: Window_Handle, cbfun: Window_Close_Proc) -> Window_Close_Proc ---;
+    SetWindowSizeCallback      :: proc(window: Window_Handle, cbfun: Window_Size_Proc) -> Window_Size_Proc ---;
+    SetWindowPosCallback       :: proc(window: Window_Handle, cbfun: Window_Pos_Proc) -> Window_Pos_Proc ---;
+    SetFramebufferSizeCallback :: proc(window: Window_Handle, cbfun: Framebuffer_Size_Proc) -> Framebuffer_Size_Proc ---;
+    SetDropCallback            :: proc(window: Window_Handle, cbfun: Drop_Proc) -> Drop_Proc ---;
+    SetMonitorCallback         :: proc(window: Window_Handle, cbfun: Monitor_Proc) -> Monitor_Proc ---;
 
-    SetKeyCallback          :: proc(window: Window_Handle, cbfun: Key_Proc) -> Key_Proc ---;
-    SetMouseButtonCallback :: proc(window: Window_Handle, cbfun: Mousebutton_Proc) -> Mousebutton_Proc ---;
-    SetCursorPosCallback   :: proc(window: Window_Handle, cbfun: Cursorpos_Proc) -> Cursorpos_Proc ---;
-    SetScrollCallback       :: proc(window: Window_Handle, cbfun: Scroll_Proc) -> Scroll_Proc ---;
-    SetCharCallback         :: proc(window: Window_Handle, cbfun: Char_Proc) -> Char_Proc ---;
-    SetCharModsCallback    :: proc(window: Window_Handle, cbfun: Charmods_Proc) -> Charmods_Proc ---;
-    SetCursorEnterCallback :: proc(window: Window_Handle, cbfun: Cursorenter_Proc) -> Cursorenter_Proc ---;
-    SetJoystickCallback     :: proc(window: Window_Handle, cbfun: Joystick_Proc) -> Joystick_Proc ---;
+    SetKeyCallback         :: proc(window: Window_Handle, cbfun: Key_Proc) -> Key_Proc ---;
+    SetMouseButtonCallback :: proc(window: Window_Handle, cbfun: Mouse_Button_Proc) -> Mouse_Button_Proc ---;
+    SetCursorPosCallback   :: proc(window: Window_Handle, cbfun: Cursor_Pos_Proc) -> Cursor_Pos_Proc ---;
+    SetScrollCallback      :: proc(window: Window_Handle, cbfun: Scroll_Proc) -> Scroll_Proc ---;
+    SetCharCallback        :: proc(window: Window_Handle, cbfun: Char_Proc) -> Char_Proc ---;
+    SetCharModsCallback    :: proc(window: Window_Handle, cbfun: Char_Mods_Proc) -> Char_Mods_Proc ---;
+    SetCursorEnterCallback :: proc(window: Window_Handle, cbfun: Cursor_Enter_Proc) -> Cursor_Enter_Proc ---;
+    SetJoystickCallback    :: proc(window: Window_Handle, cbfun: Joystick_Proc) -> Joystick_Proc ---;
 
     SetErrorCallback :: proc(cbfun: Error_Proc) -> Error_Proc ---;
 }
@@ -169,14 +163,87 @@ foreign glfw {
 
 import "core:fmt.odin"
 import "core:math.odin"
+import "core:strings.odin"
+import "core:mem.odin"
 
-create_window :: inline proc(width, height: i32, title: string, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle {
+GetVersion :: proc() -> (major, minor, rev: i32) {
+    major, minor, rev: i32;
+    GetVersion(&major, &minor, &rev);
+    return major, minor, rev;
+}
+
+GetVersionString :: proc() -> string {
+    foreign glfw {
+        glfwGetVersionString :: proc "c" () -> ^u8 ---;
+    }
+    return strings.to_odin_string(glfwGetVersionString());
+}
+
+
+GetMonitors :: proc() -> []Monitor_Handle {
+    count: i32;
+    data := GetMonitors(&count);
+    return mem.slice_ptr(data, int(count));
+}
+GetMonitorPos :: proc(monitor: Monitor_Handle) -> (xpos, ypos: i32) {
+    xpos, ypos: i32;
+    GetMonitorPos(monitor, &xpos, &ypos);
+    return xpos, ypos;
+}
+GetMonitorPhysicalSize :: proc(monitor: Monitor_Handle) -> (widthMM, heightMM: i32) {
+    widthMM, heightMM: i32;
+    GetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+    return widthMM, heightMM;
+}
+
+GetMonitorName :: proc(monitor: Monitor_Handle) -> string {
+    foreign glfw {
+        glfwGetMonitorName :: proc "c" (monitor: Monitor_Handle) -> ^u8 ---;
+    }
+    return strings.to_odin_string(glfwGetMonitorName(monitor));
+}
+
+CreateWindow :: inline proc(width, height: i32, title: string, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle {
     return CreateWindow(width, height, &title[0], monitor, share);
 }
 
-set_window_title :: proc(window: Window_Handle, fmt_string: string, args: ...any) {
+GetClipboardString :: proc(window: Window_Handle) -> string {
+    foreign glfw {
+        glfwGetClipboardString :: proc "c" (window: Window_Handle) -> ^u8 ---;
+    }
+    return strings.to_odin_string(glfwGetClipboardString(window));
+}
+
+GetVideoModes :: proc(monitor: Monitor_Handle) -> []Vid_Mode {
+    foreign glfw {
+        glfwGetVideoModes :: proc "c" (monitor: Monitor_Handle, count: ^i32) -> ^Vid_Mode ---;
+    }
+    count: i32;
+    data := glfwGetVideoModes(monitor, &count);
+    return mem.slice_ptr(data, int(count));
+}
+
+GetKeyName :: proc(key, scancode: i32) -> string {
+    foreign glfw {
+        glfwGetKeyName :: proc "c" (key, scancode: i32) -> ^u8 ---;
+    }
+    return strings.to_odin_string(glfwGetKeyName(key, scancode));
+}
+
+
+
+
+GetCursorPos :: proc(window: Window_Handle) -> (xpos, ypos: f64) {
+    xpos, ypos: f64;
+    GetCursorPos(window, &xpos, &ypos);
+    return xpos, ypos;
+}
+
+
+
+SetWindowTitle :: proc(window: Window_Handle, fmt_string: string, args: ...any) {
     if len(fmt_string) >= 256 {
-        set_window_title(window, "Too long title format string");
+        SetWindowTitle(window, "Too long title format string");
         return;
     }
     buf: [1024]u8;
@@ -184,12 +251,67 @@ set_window_title :: proc(window: Window_Handle, fmt_string: string, args: ...any
     SetWindowTitle(window, &title[0]);
 }
 
+GetWindowPos :: proc(window: Window_Handle) -> (xpos, ypos: i32) {
+    xpos, ypos: i32;
+    GetWindowPos(window, &xpos, &ypos);
+    return xpos, ypos;
+}
+GetWindowSize :: proc(window: Window_Handle) -> (width, height: i32) {
+    width, height: i32;
+    GetWindowSize(window, &width, &height);
+    return width, height;
+}
+GetFramebufferSize :: proc(window: Window_Handle) -> (width, height: i32)  {
+    width, height: i32;
+    GetFramebufferSize(window, &width, &height);
+    return width, height;
+}
+GetWindowFrameSize :: proc(window: Window_Handle) -> (left, top, right, bottom: i32) {
+    left, top, right, bottom: i32;
+    GetWindowFrameSize(window, &left, &top, &right, &bottom);
+    return left, top, right, bottom;
+}
+
+
+JoystickPresent :: proc(joy: i32) -> bool {
+    foreign glfw {
+        glfwJoystickPresent :: proc "c" (joy: i32) -> i32 ---;
+    }
+    return glfwJoystickPresent(joy) != 0;
+}
+
+VulkanSupported :: proc() -> bool {
+    foreign glfw {
+        glfwVulkanSupported :: proc "c" () -> i32 ---;
+    }
+    return glfwVulkanSupported() != 0;
+}
+
+GetJoystickAxes :: proc(joy: i32) -> []f32 {
+    count: i32;
+    data := GetJoystickAxes(joy, &count);
+    return mem.slice_ptr(data, int(count));
+}
+
+GetJoystickButtons :: proc(joy: i32) -> []u8 {
+    count: i32;
+    data := GetJoystickButtons(joy, &count);
+    return mem.slice_ptr(data, int(count));
+}
+
+GetJoystickName :: proc(joy: i32) -> string {
+    foreign glfw {
+        glfwGetJoystickName :: proc "c" (joy: i32) -> ^u8 ---;
+    }
+    return strings.to_odin_string(glfwGetJoystickName(joy));
+}
+
 // globals for persistent timing data, placeholder for "static" variables
-_Timing_Struct :: struct {
+_TimingStruct :: struct {
     t1, avg_dt, avg_dt2, last_frame_time : f64,
     num_samples, counter: int,
 }
-persistent_timing_data := _Timing_Struct{0.0, 0.0, 0.0, 1.0/60, 60, 0};
+persistent_timing_data := _TimingStruct{0.0, 0.0, 0.0, 1.0/60, 60, 0};
 
 calculate_frame_timings :: proc(window: Window_Handle) {
     using persistent_timing_data;
@@ -209,7 +331,7 @@ calculate_frame_timings :: proc(window: Window_Handle) {
         std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
         ste_dt := std_dt/math.sqrt(f64(num_samples));
 
-        set_window_title(window, "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
+        SetWindowTitle(window, "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
 
         num_samples = int(1.0/avg_dt);
         avg_dt = 0.0;
