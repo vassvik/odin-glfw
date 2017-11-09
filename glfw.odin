@@ -340,6 +340,36 @@ calculate_frame_timings :: proc(window: Window_Handle) {
     }
 }
 
+init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false) -> Window_Handle {
+    //
+    error_callback :: proc"c"(error: i32, desc: ^u8) {
+        fmt.printf("Error code %d: %s\n", error, strings.to_odin_string(desc));
+    }
+    SetErrorCallback(error_callback);
+
+    //
+    if Init() == FALSE do return nil;
+
+    //
+    if samples > 0 do WindowHint(SAMPLES, i32(samples));
+    WindowHint(CONTEXT_VERSION_MAJOR, i32(version_major));
+    WindowHint(CONTEXT_VERSION_MINOR, i32(version_minor));
+    WindowHint(OPENGL_PROFILE, OPENGL_CORE_PROFILE);
+
+    //
+    window := CreateWindow(i32(resx), i32(resy), title, nil, nil);
+    if window == nil do return nil;
+    
+    //
+    MakeContextCurrent(window);
+    SwapInterval(i32(vsync));
+
+    return window;
+}
+
+set_proc_address :: proc(p: rawptr, name: string) { 
+    (cast(^rawptr)p)^ = rawptr(GetProcAddress(&name[0]));
+}
 
 /*** Constants ***/
 /* Versions */
