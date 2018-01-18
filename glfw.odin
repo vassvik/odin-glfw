@@ -165,7 +165,6 @@ import "core:strings.odin"
 import "core:mem.odin"
 
 GetVersion :: proc() -> (major, minor, rev: i32) {
-    major, minor, rev: i32;
     glfwGetVersion(&major, &minor, &rev);
     return major, minor, rev;
 }
@@ -183,12 +182,10 @@ GetMonitors :: proc() -> []Monitor_Handle {
     return mem.slice_ptr(data, int(count));
 }
 GetMonitorPos :: proc(monitor: Monitor_Handle) -> (xpos, ypos: i32) {
-    xpos, ypos: i32;
     glfwGetMonitorPos(monitor, &xpos, &ypos);
     return xpos, ypos;
 }
 GetMonitorPhysicalSize :: proc(monitor: Monitor_Handle) -> (widthMM, heightMM: i32) {
-    widthMM, heightMM: i32;
     glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
     return widthMM, heightMM;
 }
@@ -238,7 +235,6 @@ GetKeyName :: proc(key: Key, scancode: i32) -> string {
 
 
 GetCursorPos :: proc(window: Window_Handle) -> (xpos, ypos: f64) {
-    xpos, ypos: f64;
     glfwGetCursorPos(window, &xpos, &ypos);
     return xpos, ypos;
 }
@@ -265,22 +261,18 @@ SetWindowTitle :: proc(window: Window_Handle, fmt_string: string, args: ...any) 
 }
 
 GetWindowPos :: proc(window: Window_Handle) -> (xpos, ypos: i32) {
-    xpos, ypos: i32;
     glfwGetWindowPos(window, &xpos, &ypos);
     return xpos, ypos;
 }
 GetWindowSize :: proc(window: Window_Handle) -> (width, height: i32) {
-    width, height: i32;
     glfwGetWindowSize(window, &width, &height);
     return width, height;
 }
 GetFramebufferSize :: proc(window: Window_Handle) -> (width, height: i32)  {
-    width, height: i32;
     glfwGetFramebufferSize(window, &width, &height);
     return width, height;
 }
 GetWindowFrameSize :: proc(window: Window_Handle) -> (left, top, right, bottom: i32) {
-    left, top, right, bottom: i32;
     glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
     return left, top, right, bottom;
 }
