@@ -66,13 +66,13 @@ foreign glfw {
     @(link_name="glfwGetGammaRamp")                     GetGammaRamp :: proc(monitor: Monitor_Handle) -> ^Gamma_Ramp ---;
     @(link_name="glfwSetGammaRamp")                     SetGammaRamp :: proc(monitor: Monitor_Handle, ramp: ^Gamma_Ramp) ---;
 
-                                                        glfwCreateWindow  :: proc(width, height: i32, title: ^u8, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle ---;
+                                                        glfwCreateWindow  :: proc "c"(width, height: i32, title: ^u8, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle ---;
     @(link_name="glfwDestroyWindow")                    DestroyWindow     :: proc(window: Window_Handle) ---;
 
     @(link_name="glfwWindowHint")                       WindowHint         :: proc(hint, value: i32) ---;
     @(link_name="glfwDefaultWindowHints")               DefaultWindowHints :: proc() ---;
 
-    @(link_name="glfwWindowShouldClose")                WindowShouldClose  :: proc(window: Window_Handle) -> i32 ---;
+                                                        glfwWindowShouldClose  :: proc(window: Window_Handle) -> i32 ---;
 
     @(link_name="glfwSwapInterval")                     SwapInterval :: proc(interval: i32) ---;
     @(link_name="glfwSwapBuffers")                      SwapBuffers  :: proc(window: Window_Handle) ---;
@@ -244,6 +244,10 @@ GetCursorPos :: proc(window: Window_Handle) -> (xpos, ypos: f64) {
 }
 
 
+WindowShouldClose :: proc(window: Window_Handle) -> bool {
+    return glfwWindowShouldClose(window) == TRUE;
+}
+
 SetWindowShouldClose :: proc(window: Window_Handle, set: bool) {
     foreign glfw {
         glfwSetWindowShouldClose :: proc "c" (window: Window_Handle, value: i32) ---;
@@ -314,6 +318,8 @@ GetJoystickName :: proc(joy: i32) -> string {
     return strings.to_odin_string(glfwGetJoystickName(joy));
 }
 
+
+
 // globals for persistent timing data, placeholder for "static" variables
 _TimingStruct :: struct {
     t1, avg_dt, avg_dt2, last_frame_time : f64,
@@ -376,7 +382,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 }
 
 set_proc_address :: proc(p: rawptr, name: string) {
-    (cast(^rawptr)p)^ = rawptr(GetProcAddress(&name[0]));
+    (cast(^rawptr)p)^ = GetProcAddress(&name[0]);
 }
 
 /*** Constants ***/
