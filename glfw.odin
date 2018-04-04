@@ -33,7 +33,7 @@ Window_Close_Proc     :: #type proc "c" (window: Window_Handle);
 Window_Size_Proc      :: #type proc "c" (window: Window_Handle, width, height: i32);
 Window_Pos_Proc       :: #type proc "c" (window: Window_Handle, xpos, ypos: i32);
 Framebuffer_Size_Proc :: #type proc "c" (window: Window_Handle, width, height: i32);
-Drop_Proc             :: #type proc "c" (window: Window_Handle, count: i32, paths: ^^u8);
+Drop_Proc             :: #type proc "c" (window: Window_Handle, count: i32, paths: ^cstring);
 Monitor_Proc          :: #type proc "c" (window: Window_Handle);
 
 Key_Proc              :: #type proc "c" (window: Window_Handle, key, scancode, action, mods: i32);
@@ -45,7 +45,7 @@ Char_Mods_Proc        :: #type proc "c" (window: Window_Handle, codepoint: u32, 
 Cursor_Enter_Proc     :: #type proc "c" (window: Window_Handle, entered: i32);
 Joystick_Proc         :: #type proc "c" (joy, event: i32);
 
-Error_Proc            :: #type proc "c" (error: i32, description: ^u8);
+Error_Proc            :: #type proc "c" (error: i32, description: cstring);
 
 /*** Functions ***/
 @(default_calling_convention="c")
@@ -66,7 +66,7 @@ foreign glfw {
     @(link_name="glfwGetGammaRamp")                     GetGammaRamp :: proc(monitor: Monitor_Handle) -> ^Gamma_Ramp ---;
     @(link_name="glfwSetGammaRamp")                     SetGammaRamp :: proc(monitor: Monitor_Handle, ramp: ^Gamma_Ramp) ---;
 
-                                                        glfwCreateWindow  :: proc "c"(width, height: i32, title: ^u8, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle ---;
+                                                        glfwCreateWindow  :: proc "c"(width, height: i32, title: cstring, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle ---;
     @(link_name="glfwDestroyWindow")                    DestroyWindow     :: proc(window: Window_Handle) ---;
 
     @(link_name="glfwWindowHint")                       WindowHint         :: proc(hint, value: i32) ---;
@@ -77,7 +77,7 @@ foreign glfw {
     @(link_name="glfwSwapInterval")                     SwapInterval :: proc(interval: i32) ---;
     @(link_name="glfwSwapBuffers")                      SwapBuffers  :: proc(window: Window_Handle) ---;
 
-                                                        glfwSetWindowTitle   :: proc(window: Window_Handle, title: ^u8) ---;
+                                                        glfwSetWindowTitle   :: proc(window: Window_Handle, title: cstring) ---;
     @(link_name="glfwSetWindowIcon")                    SetWindowIcon        :: proc(window: Window_Handle, count: i32, images: ^Image) ---;
     @(link_name="glfwSetWindowPos")                     SetWindowPos         :: proc(window: Window_Handle, xpos, ypos: i32) ---;
     @(link_name="glfwSetWindowSizeLimits")              SetWindowSizeLimits  :: proc(window: Window_Handle, minwidth, minheight, maxwidth, maxheight: i32) ---;
@@ -121,7 +121,7 @@ foreign glfw {
                                                         glfwGetJoystickAxes    :: proc(joy: i32, count: ^i32) -> ^f32 ---;
                                                         glfwGetJoystickButtons :: proc(joy: i32, count: ^i32) -> ^u8 ---;
 
-    @(link_name="glfwSetClipboardString")               SetClipboardString :: proc(window: Window_Handle, str: ^u8) ---;
+    @(link_name="glfwSetClipboardString")               SetClipboardString :: proc(window: Window_Handle, str: cstring) ---;
 
     @(link_name="glfwGetTime")                          GetTime           :: proc() -> f64 ---;
     @(link_name="glfwSetTime")                          SetTime           :: proc(time: f64) ---;
@@ -130,10 +130,10 @@ foreign glfw {
 
     @(link_name="glfwMakeContextCurrent")               MakeContextCurrent :: proc(window: Window_Handle) ---;
     @(link_name="glfwGetCurrentContext")                GetCurrentContext  :: proc() -> Window_Handle ---;
-    @(link_name="glfwGetProcAddress")                   GetProcAddress     :: proc(name : ^u8) -> rawptr ---;
-    @(link_name="glfwExtensionSupported")               ExtensionSupported :: proc(extension: ^u8) -> i32 ---;
+    @(link_name="glfwGetProcAddress")                   GetProcAddress     :: proc(name : cstring) -> rawptr ---;
+    @(link_name="glfwExtensionSupported")               ExtensionSupported :: proc(extension: cstring) -> i32 ---;
 
-    @(link_name="glfwGetRequiredInstanceExtensions")    GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^^u8 ---;
+    @(link_name="glfwGetRequiredInstanceExtensions")    GetRequiredInstanceExtensions ::  proc(count: ^u32) -> ^cstring ---;
 
     @(link_name="glfwSetWindowIconifyCallback")         SetWindowIconifyCallback   :: proc(window: Window_Handle, cbfun: Window_Iconify_Proc) -> Window_Iconify_Proc ---;
     @(link_name="glfwSetWindowRefreshCallback")         SetWindowRefreshCallback   :: proc(window: Window_Handle, cbfun: Window_Refresh_Proc) -> Window_Refresh_Proc ---;
@@ -171,9 +171,9 @@ GetVersion :: proc() -> (major, minor, rev: i32) {
 
 GetVersionString :: proc() -> string {
     foreign glfw {
-        glfwGetVersionString :: proc "c" () -> ^u8 ---;
+        glfwGetVersionString :: proc "c" () -> cstring ---;
     }
-    return strings.to_odin_string(glfwGetVersionString());
+    return string(cstring(glfwGetVersionString()));
 }
 
 GetMonitors :: proc() -> []Monitor_Handle {
@@ -192,20 +192,20 @@ GetMonitorPhysicalSize :: proc(monitor: Monitor_Handle) -> (widthMM, heightMM: i
 
 GetMonitorName :: proc(monitor: Monitor_Handle) -> string {
     foreign glfw {
-        glfwGetMonitorName :: proc "c" (monitor: Monitor_Handle) -> ^u8 ---;
+        glfwGetMonitorName :: proc "c" (monitor: Monitor_Handle) -> cstring ---;
     }
-    return strings.to_odin_string(glfwGetMonitorName(monitor));
+    return string(cstring(glfwGetMonitorName(monitor)));
 }
 
 CreateWindow :: inline proc(width, height: i32, title: string, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle {
-    return glfwCreateWindow(width, height, &title[0], monitor, share);
+    return glfwCreateWindow(width, height, cstring(&title[0]), monitor, share);
 }
 
 GetClipboardString :: proc(window: Window_Handle) -> string {
     foreign glfw {
-        glfwGetClipboardString :: proc "c" (window: Window_Handle) -> ^u8 ---;
+        glfwGetClipboardString :: proc "c" (window: Window_Handle) -> cstring ---;
     }
-    return strings.to_odin_string(glfwGetClipboardString(window));
+    return string(cstring(glfwGetClipboardString(window)));
 }
 
 GetVideoModes :: proc(monitor: Monitor_Handle) -> []Vid_Mode {
@@ -227,9 +227,9 @@ GetKey :: inline proc(window: Window_Handle, key: i32) -> bool {
 }
 GetKeyName :: proc(key, scancode: i32) -> string {
     foreign glfw {
-        glfwGetKeyName :: proc "c" (key, scancode: i32) -> ^u8 ---;
+        glfwGetKeyName :: proc "c" (key, scancode: i32) -> cstring ---;
     }
-    return strings.to_odin_string(glfwGetKeyName(key, scancode));
+    return string(cstring(glfwGetKeyName(key, scancode)));
 }
 
 
@@ -257,7 +257,7 @@ SetWindowTitle :: proc(window: Window_Handle, fmt_string: string, args: ...any) 
     }
     buf: [1024]u8;
     title := fmt.bprintf(buf[..], fmt_string, ...args);
-    glfwSetWindowTitle(window, &title[0]);
+    glfwSetWindowTitle(window, cstring(&title[0]));
 }
 
 GetWindowPos :: proc(window: Window_Handle) -> (xpos, ypos: i32) {
@@ -305,9 +305,9 @@ GetJoystickButtons :: proc(joy: i32) -> []u8 {
 
 GetJoystickName :: proc(joy: i32) -> string {
     foreign glfw {
-        glfwGetJoystickName :: proc "c" (joy: i32) -> ^u8 ---;
+        glfwGetJoystickName :: proc "c" (joy: i32) -> cstring ---;
     }
-    return strings.to_odin_string(glfwGetJoystickName(joy));
+    return string(cstring(glfwGetJoystickName(joy)));
 }
 
 
@@ -348,8 +348,8 @@ calculate_frame_timings :: proc(window: Window_Handle) {
 
 init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false) -> Window_Handle {
     //
-    error_callback :: proc"c"(error: i32, desc: ^u8) {
-        fmt.printf("Error code %d: %s\n", error, strings.to_odin_string(desc));
+    error_callback :: proc"c"(error: i32, desc: cstring) {
+        fmt.printf("Error code %d: %s\n", error, desc);
     }
     SetErrorCallback(error_callback);
 
@@ -374,7 +374,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 }
 
 set_proc_address :: proc(p: rawptr, name: string) {
-    (cast(^rawptr)p)^ = GetProcAddress(&name[0]);
+    (cast(^rawptr)p)^ = GetProcAddress(cstring(&name[0]));
 }
 
 /*** Constants ***/
