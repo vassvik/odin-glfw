@@ -373,8 +373,8 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
     return window;
 }
 
-set_proc_address :: proc(p: rawptr, name: string) {
-    (cast(^rawptr)p)^ = GetProcAddress(cstring(&name[0]));
+set_proc_address :: proc(p: rawptr, name: cstring) {
+    (cast(^rawptr)p)^ = GetProcAddress(name);
 }
 
 /*** Constants ***/
