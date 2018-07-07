@@ -1,5 +1,9 @@
-when ODIN_OS == "linux"   do foreign import glfw "system:glfw";
-when ODIN_OS == "windows" do foreign import glfw "system:glfw3dll.lib";
+package glfw
+
+import "core:os"
+
+when os.OS == "linux"   do foreign import glfw "system:glfw";
+when os.OS == "windows" do foreign import glfw "system:glfw3dll.lib";
 
 /*** Structs/types ***/
 Window_Handle  :: rawptr;
@@ -159,10 +163,10 @@ foreign glfw {
 
 // Odin Wrappers
 
-import "core:fmt.odin"
-import "core:math.odin"
-import "core:strings.odin"
-import "core:mem.odin"
+import "core:fmt"
+import "core:math"
+import "core:strings"
+import "core:mem"
 
 GetVersion :: proc() -> (major, minor, rev: i32) {
     glfwGetVersion(&major, &minor, &rev);
