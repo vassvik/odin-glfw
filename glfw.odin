@@ -6,9 +6,9 @@ when os.OS == "linux"   do foreign import glfw "system:glfw";
 when os.OS == "windows" do foreign import glfw "system:glfw3dll.lib";
 
 /*** Structs/types ***/
-Window_Handle  :: rawptr;
-Monitor_Handle :: rawptr;
-Cursor_Handle  :: rawptr;
+Window_Handle  :: distinct rawptr;
+Monitor_Handle :: distinct rawptr;
+Cursor_Handle  :: distinct rawptr;
 
 Vid_Mode :: struct {
     width:        i32,
