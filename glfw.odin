@@ -3,7 +3,7 @@ package glfw
 import "core:os"
 
 when os.OS == "linux"   do foreign import glfw "system:glfw";
-when os.OS == "windows" do foreign import glfw "system:glfw3dll.lib";
+when os.OS == "windows" do foreign import glfw "glfw3dll.lib";
 
 /*** Structs/types ***/
 Window_Handle  :: rawptr;
@@ -159,6 +159,12 @@ foreign glfw {
     @(link_name="glfwSetJoystickCallback")              SetJoystickCallback    :: proc(window: Window_Handle, cbfun: Joystick_Proc) -> Joystick_Proc ---;
 
     @(link_name="glfwSetErrorCallback")                 SetErrorCallback :: proc(cbfun: Error_Proc) -> Error_Proc ---;
+
+
+    glfwGetMonitorContentScale :: proc(monitor: Monitor_Handle, xscale, yscale: ^f32) ---;
+    glfwSetWindowOpacity :: proc(window: Window_Handle, opacity: f32) ---;
+
+
 }
 
 // Odin Wrappers
@@ -362,12 +368,14 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 
     //
     if samples > 0 do WindowHint(SAMPLES, i32(samples));
+    WindowHint(DECORATED, 0);
     WindowHint(CONTEXT_VERSION_MAJOR, i32(version_major));
     WindowHint(CONTEXT_VERSION_MINOR, i32(version_minor));
     WindowHint(OPENGL_PROFILE, OPENGL_CORE_PROFILE);
 
     //
     window := CreateWindow(i32(resx), i32(resy), title, nil, nil);
+    //window := CreateWindow(i32(resx), i32(resy), title, GetPrimaryMonitor(), nil);
     if window == nil do return nil;
 
     //
