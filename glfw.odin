@@ -2,8 +2,8 @@ package glfw
 
 import "core:os"
 
-when os.OS == "linux"   do foreign import glfw "system:glfw";
-when os.OS == "windows" do foreign import glfw "glfw3dll.lib";
+when os.OS == "linux"   do foreign import glfw "system:glfw"; // TODO: Add the billion-or-so static libs to link to in linux
+when os.OS == "windows" do foreign import glfw { "lib/glfw3.lib", "system:user32.lib", "system:gdi32.lib", "system:shell32.lib" };
 
 /*** Structs/types ***/
 Window_Handle  :: rawptr;

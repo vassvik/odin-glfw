@@ -4,7 +4,7 @@
 
 odin-glfw contain bindings to the C library, in addition to a bunch of additional wrappers and utility functions.
 
-#### NOTE: Requires binaries to be available in system paths (in linux) or bundled with the exe (in windows).
+#### NOTE: Binds to a static GLFW in windows, and shared in linux. 
 
 #### NOTE: It is recommended to put this into the shared collection:
 ```
@@ -12,6 +12,7 @@ cd Odin/shared
 git clone https://github.com/vassvik/odin-glfw.git
 ```
 
+#### NOTE: Run `build_glfw.bat` in windows to build the lib. Requires Git and CMake to clone the GLFW repo and build it. In linux you can likely get your distro's glfw3 package and it will link just fine.
 
 #### Usage:
 
