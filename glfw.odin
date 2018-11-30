@@ -368,7 +368,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 
     //
     if samples > 0 do WindowHint(SAMPLES, i32(samples));
-    WindowHint(DECORATED, 0);
+    WindowHint(DECORATED, 1);
     WindowHint(CONTEXT_VERSION_MAJOR, i32(version_major));
     WindowHint(CONTEXT_VERSION_MINOR, i32(version_minor));
     WindowHint(OPENGL_PROFILE, OPENGL_CORE_PROFILE);
