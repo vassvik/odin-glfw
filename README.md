@@ -21,3 +21,7 @@ GLFW is primarily used to create a window, create an opengl context, and to hand
 To use OpenGL functions you need an OpenGL function loader. See [https://github.com/vassvik/odin-gl](https://github.com/vassvik/odin-gl) for one such loader. 
 
 This library is used in [https://github.com/vassvik/odin-gl_font](https://github.com/vassvik/odin-gl_font) to perform simple text rendering. Take a look.
+
+### License
+
+This library is published under a dual license, [inspired by Sean Barret's `stb` libraries](https://github.com/nothings/stb#whats-the-license). 

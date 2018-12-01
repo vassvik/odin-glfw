@@ -1,8 +1,8 @@
 package glfw_bindings 
 
-Window_Handle  :: rawptr;
-Monitor_Handle :: rawptr;
-Cursor_Handle  :: rawptr;
+Window_Handle  :: distinct rawptr;
+Monitor_Handle :: distinct rawptr;
+Cursor_Handle  :: distinct rawptr;
 
 Vid_Mode :: struct {
     width:        i32,
