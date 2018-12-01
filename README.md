@@ -24,4 +24,4 @@ This library is used in [https://github.com/vassvik/odin-gl_font](https://github
 
 ### License
 
-This library is published under a dual public comain and MIT license, [inspired by Sean Barret's `stb` libraries](https://github.com/nothings/stb#whats-the-license). 
+This library is published under a dual public domain and MIT license, [inspired by Sean Barret's `stb` libraries](https://github.com/nothings/stb#whats-the-license). 
