@@ -15,7 +15,7 @@ Vid_Mode :: struct {
 
 Gamma_Ramp :: struct {
     red, green, blue: ^u16,
-    size:              u32,
+    size:              u32, 
 };
 
 Image :: struct {

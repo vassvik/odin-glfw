@@ -5,7 +5,7 @@ package glfw_bindings
 import "core:os"
 
 when os.OS == "windows" {
-	foreign import glfw { "lib/glfw3.lib", "system:user32.lib", "system:gdi32.lib", "system:shell32.lib" };
+	foreign import glfw { "../lib/glfw3.lib", "system:user32.lib", "system:gdi32.lib", "system:shell32.lib" };
 	
 	HWND :: rawptr;
 
