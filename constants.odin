@@ -329,9 +329,7 @@ using Window_Attribute :: enum {
 	CONTEXT_NO_ERROR = bindings.CONTEXT_NO_ERROR,
 	CONTEXT_CREATION_API = bindings.CONTEXT_CREATION_API,
 	SCALE_TO_MONITOR = bindings.SCALE_TO_MONITOR,
-}
 
-using Platform_Attribute :: enum {
 	/* Cross platform stuff */
 	COCOA_RETINA_FRAMEBUFFER = bindings.COCOA_RETINA_FRAMEBUFFER,
 	COCOA_FRAME_NAME = bindings.COCOA_FRAME_NAME,

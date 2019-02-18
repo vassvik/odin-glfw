@@ -43,7 +43,7 @@ calculate_frame_timings :: proc(window: Window_Handle) {
     }
 }
 
-init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false) -> Window_Handle {
+init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false, decorate := true) -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
         fmt.printf("Error code %d: %s\n", error, desc);
@@ -55,7 +55,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 
     //
     if samples > 0 do bind.WindowHint(bind.SAMPLES, i32(samples));
-    //bind.WindowHint(bind.DECORATED, 1);
+    if !decorate do bind.WindowHint(bind.DECORATED, 0);
     bind.WindowHint(bind.CONTEXT_VERSION_MAJOR, i32(version_major));
     bind.WindowHint(bind.CONTEXT_VERSION_MINOR, i32(version_minor));
     bind.WindowHint(bind.OPENGL_PROFILE, bind.OPENGL_CORE_PROFILE);

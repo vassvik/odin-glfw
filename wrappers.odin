@@ -12,7 +12,7 @@ terminate :: inline proc() {
     bind.Terminate();
 }
 
-init_hint :: inline proc(hint, value: int) { 
+init_hint :: inline proc(hint: Init_Hint, value: b32) { 
     bind.InitHint(cast(i32)hint, cast(i32)value);
 }
 
@@ -22,10 +22,10 @@ get_version :: inline proc() -> (int, int, int) {
     return cast(int)major, cast(int)minor, cast(int)rev;
 }
 
-get_error :: inline proc(description: ^cstring) -> (cstring, int) {
+get_error :: inline proc() -> (cstring, Error) {
     desc: cstring;
     ret := bind.GetError(&desc);
-    return desc, cast(int)ret; // WARNING: may return nil
+    return desc, cast(Error)ret; // WARNING: may return nil
 }
 
 get_primary_monitor :: inline proc() -> Monitor_Handle {
@@ -51,7 +51,7 @@ get_monitor_physical_size :: inline proc(monitor: Monitor_Handle) -> (int, int) 
 }
 
 
-get_monitor_content_scale :: inline proc(monitor: Monitor_Handle) -> (f32, f32) { // TODO: make this f64?
+get_monitor_content_scale :: inline proc(monitor: Monitor_Handle) -> (f32, f32) {
     xscale, yscale: f32;
     bind.GetMonitorContentScale(monitor, &xscale, &yscale);
     return xscale, yscale;
@@ -69,7 +69,7 @@ get_video_mode :: inline proc(monitor: Monitor_Handle) -> ^Vid_Mode {
     return bind.GetVideoMode(monitor);
 }
 
-set_gamma :: inline proc(monitor: Monitor_Handle, gamma: f32) { // TODO: make f64?
+set_gamma :: inline proc(monitor: Monitor_Handle, gamma: f32) { 
     bind.SetGamma(monitor, gamma);
 }
 
@@ -194,8 +194,8 @@ get_video_modes :: inline proc(monitor: Monitor_Handle) -> []Vid_Mode {
     return mem.slice_ptr(data, int(count));
 }
 
-get_key :: inline proc(window: Window_Handle, key: Key) -> bool {
-    return cast(bool)bind.GetKey(window, cast(i32)key); // NOTE: true == PRESS, false == RELEASE
+get_key :: inline proc(window: Window_Handle, key: Key) -> Key_State {
+    return cast(Key_State)bind.GetKey(window, cast(i32)key); // NOTE: true == PRESS, false == RELEASE
 }
 
 get_key_name :: inline proc(key, Key, scancode: int) -> string {
@@ -300,8 +300,8 @@ set_input_mode :: inline proc(window: Window_Handle, mode: Input_Mode, value: in
     bind.SetInputMode(window, cast(i32)mode, cast(i32)value);
 }
 
-get_mouse_button :: inline proc(window: Window_Handle, button: Mouse_Button) -> int {
-    return cast(int)bind.GetMouseButton(window, cast(i32)button);
+get_mouse_button :: inline proc(window: Window_Handle, button: Mouse_Button) -> Button_State {
+    return cast(Button_State)bind.GetMouseButton(window, cast(i32)button);
 }
 
 get_cursor_pos :: inline proc(window: Window_Handle) -> (f64, f64) {
