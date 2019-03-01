@@ -45,8 +45,8 @@ Key_Proc          :: #type proc "c" (window: Window_Handle, key, scancode, actio
 Mouse_Button_Proc :: #type proc "c" (window: Window_Handle, button, action, mods: i32);
 Cursor_Pos_Proc   :: #type proc "c" (window: Window_Handle, xpos,  ypos: f64);
 Scroll_Proc       :: #type proc "c" (window: Window_Handle, xoffset, yoffset: f64);
-Char_Proc         :: #type proc "c" (window: Window_Handle, codepoint: u32);
-Char_Mods_Proc    :: #type proc "c" (window: Window_Handle, codepoint: u32, mods: i32);
+Char_Proc         :: #type proc "c" (window: Window_Handle, codepoint: rune);
+Char_Mods_Proc    :: #type proc "c" (window: Window_Handle, codepoint: rune, mods: i32);
 Cursor_Enter_Proc :: #type proc "c" (window: Window_Handle, entered: i32);
 Joystick_Proc     :: #type proc "c" (joy, event: i32);
 
