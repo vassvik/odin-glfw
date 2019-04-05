@@ -379,7 +379,7 @@ get_gamepad_state :: inline proc(jid: Joystick) -> (Gamepad_State, bool) {
 }
 
 set_clipboard_string :: inline proc(window: Window_Handle, str: string) {
-    bind.SetClipboardString(window, cast(cstring)&str[0]); // TODO: is this safe? (string -> cstring)
+    if len(str) > 0 do bind.SetClipboardString(window, cast(cstring)&str[0]); // TODO: is this safe? (string -> cstring)
 }
 
 get_time :: inline proc() -> f64 {
