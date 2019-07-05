@@ -18,4 +18,7 @@ pushd dependencies
 	    cmake --build build --config Release
 	    copy build\src\glfw3.lib ..\..\lib\glfw3.lib
 	popd
+
 popd
+
+rmdir /q /s dependencies\
