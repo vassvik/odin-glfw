@@ -43,6 +43,35 @@ calculate_frame_timings :: proc(window: Window_Handle) {
     }
 }
 
+calculate_frame_timings2 :: proc(window: Window_Handle, old_title: string) {
+    using persistent_timing_data;
+    t2 := bind.GetTime();
+    dt := t2-t1;
+    t1 = t2;
+
+    avg_dt += dt;
+    avg_dt2 += dt*dt;
+    counter += 1;
+
+    last_frame_time = dt;
+
+    if counter == num_samples {
+        avg_dt  /= f64(num_samples);
+        avg_dt2 /= f64(num_samples);
+        std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
+        ste_dt := std_dt/math.sqrt(f64(num_samples));
+
+        buf: [1024]u8;
+        title := fmt.bprintf(buf[:], "%s     fps = %.2f\x00", old_title, 1.0/avg_dt);
+        bind.SetWindowTitle(window, cstring(&title[0]));
+
+        num_samples = int(1.0/avg_dt);
+        avg_dt = 0.0;
+        avg_dt2 = 0.0;
+        counter = 0;
+    }
+}
+
 init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false, decorate := true) -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
