@@ -1,7 +1,7 @@
 package glfw
 
 import bind "bindings"
-
+import "core:strings"
 import "core:mem" // for pointer-to-slice conversions
 
 init :: inline proc() -> bool { 
@@ -82,7 +82,7 @@ set_gamma_ramp :: inline proc(monitor: Monitor_Handle, ramp: ^Gamma_Ramp) {
 }
 
 create_window :: inline proc(width, height: int, title: string, monitor: Monitor_Handle, share: Window_Handle) -> Window_Handle {
-    return bind.CreateWindow(cast(i32)width, cast(i32)height, cstring(&title[0]), monitor, share); // TODO: is this safe? 
+    return bind.CreateWindow(cast(i32)width, cast(i32)height, strings.unsafe_string_to_cstring(title), monitor, share); // TODO: is this safe? 
 }
 
 destroy_window :: inline proc(window: Window_Handle) {
@@ -98,7 +98,7 @@ default_window_hints :: inline proc() {
 }
 
 window_hint_string :: inline proc(hint: Window_Attribute, value: string) { 
-    bind.WindowHintString(cast(i32)hint, cstring(&value[0])); // TODO: is this safe? 
+    bind.WindowHintString(cast(i32)hint, strings.unsafe_string_to_cstring(value)); // TODO: is this safe? 
 }
 
 window_should_close :: inline proc(window: Window_Handle) -> bool {
@@ -114,7 +114,7 @@ swap_buffers :: inline proc(window: Window_Handle) {
 }
 
 set_window_title :: inline proc(window: Window_Handle, title: string) {
-    bind.SetWindowTitle(window, cstring(&title[0])); // TODO: is this safe?
+    bind.SetWindowTitle(window, strings.unsafe_string_to_cstring(title)); // TODO: is this safe?
 }
 
 set_window_icon :: inline proc(window: Window_Handle, images: []Image) {
@@ -365,7 +365,7 @@ joystick_is_gamepad :: inline proc(jid: Joystick) -> bool {
 }
 
 update_gamepad_mappings :: inline proc(str: string) -> bool {
-    return cast(bool)bind.UpdateGamepadMappings(cast(cstring)&str[0]);
+    return cast(bool)bind.UpdateGamepadMappings(strings.unsafe_string_to_cstring(str));
 }
 
 get_gamepad_name :: inline proc(jid: Joystick) -> string {
@@ -379,7 +379,7 @@ get_gamepad_state :: inline proc(jid: Joystick) -> (Gamepad_State, bool) {
 }
 
 set_clipboard_string :: inline proc(window: Window_Handle, str: string) {
-    if len(str) > 0 do bind.SetClipboardString(window, cast(cstring)&str[0]); // TODO: is this safe? (string -> cstring)
+    if len(str) > 0 do bind.SetClipboardString(window, strings.unsafe_string_to_cstring(str)); // TODO: is this safe? (string -> cstring)
 }
 
 get_time :: inline proc() -> f64 {
@@ -407,11 +407,11 @@ get_current_context :: inline proc() -> Window_Handle {
 }
 
 get_proc_address :: inline proc(name: string) -> rawptr {
-    return bind.GetProcAddress(cast(cstring)&name[0]); // TODO: is this safe? (string -> cstring)
+    return bind.GetProcAddress(strings.unsafe_string_to_cstring(name)); // TODO: is this safe? (string -> cstring)
 }
 
 extension_supported :: inline proc(extension: string) -> bool { 
-    return cast(bool)bind.ExtensionSupported(cast(cstring)&extension[0]); // TODO: is this safe?
+    return cast(bool)bind.ExtensionSupported(strings.unsafe_string_to_cstring(extension)); // TODO: is this safe?
 }
 
 set_window_iconify_callback :: inline proc(window: Window_Handle, cbfun: Window_Iconify_Proc) -> Window_Iconify_Proc {

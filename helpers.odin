@@ -2,6 +2,7 @@ package glfw
 
 import "core:fmt"
 import "core:math"
+import "core:strings"
 
 import bind "bindings"
 
@@ -34,7 +35,7 @@ calculate_frame_timings :: proc(window: Window_Handle) {
 
         buf: [1024]u8;
         title := fmt.bprintf(buf[:], "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
-        bind.SetWindowTitle(window, cstring(&title[0]));
+        bind.SetWindowTitle(window, strings.unsafe_string_to_cstring(title));
 
         num_samples = int(1.0/avg_dt);
         avg_dt = 0.0;
@@ -63,7 +64,7 @@ calculate_frame_timings2 :: proc(window: Window_Handle, old_title: string) {
 
         buf: [1024]u8;
         title := fmt.bprintf(buf[:], "%s     fps = %.2f\x00", old_title, 1.0/avg_dt);
-        bind.SetWindowTitle(window, cstring(&title[0]));
+        bind.SetWindowTitle(window, strings.unsafe_string_to_cstring(title));
 
         num_samples = int(1.0/avg_dt);
         avg_dt = 0.0;
