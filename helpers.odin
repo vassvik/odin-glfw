@@ -59,8 +59,8 @@ calculate_frame_timings2 :: proc(window: Window_Handle, old_title: string) {
     if counter == num_samples {
         avg_dt  /= f64(num_samples);
         avg_dt2 /= f64(num_samples);
-        std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
-        ste_dt := std_dt/math.sqrt(f64(num_samples));
+        //std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
+        //ste_dt := std_dt/math.sqrt(f64(num_samples));
 
         buf: [1024]u8;
         title := fmt.bprintf(buf[:], "%s     fps = %.2f\x00", old_title, 1.0/avg_dt);
