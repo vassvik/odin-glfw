@@ -102,6 +102,32 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
     return window;
 }
 
+init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32) -> Window_Handle {
+    //
+    error_callback :: proc"c"(error: i32, desc: cstring) {
+        fmt.printf("Error code %d: %s\n", error, desc);
+    }
+    bind.SetErrorCallback(error_callback);
+
+    //
+    if bind.Init() == bind.FALSE do return nil;
+
+    //
+    for k, v in window_attributes {
+        bind.WindowHint(i32(k), i32(v));
+    }
+
+    //
+    window := create_window(int(resx), int(resy), title, nil, nil);
+    if window == nil do return nil;
+
+    //
+    bind.MakeContextCurrent(window);
+    bind.SwapInterval(i32(swap_interval));
+
+    return window;
+}
+
 set_proc_address :: proc(p: rawptr, name: cstring) {
     (cast(^rawptr)p)^ = bind.GetProcAddress(name);
 }
