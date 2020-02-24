@@ -102,7 +102,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
     return window;
 }
 
-init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32) -> Window_Handle {
+init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32, share: Window_Handle = nil) -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
         fmt.printf("Error code %d: %s\n", error, desc);
@@ -118,7 +118,7 @@ init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap
     }
 
     //
-    window := create_window(int(resx), int(resy), title, nil, nil);
+    window := create_window(int(resx), int(resy), title, nil, share);
     if window == nil do return nil;
 
     //
