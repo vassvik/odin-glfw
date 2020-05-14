@@ -3,6 +3,7 @@ package glfw
 import "core:fmt"
 import "core:math"
 import "core:strings"
+import "core:runtime"
 
 import bind "bindings"
 
@@ -76,6 +77,7 @@ calculate_frame_timings2 :: proc(window: Window_Handle, old_title: string) {
 init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_major := 3, version_minor := 3, samples := 0, vsync := false, decorate := true, maximize := false) -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
+        context = runtime.default_context();
         fmt.printf("Error code %d: %s\n", error, desc);
     }
     bind.SetErrorCallback(error_callback);
@@ -105,6 +107,7 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
 init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32, share: Window_Handle = nil) -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
+        context = runtime.default_context();
         fmt.printf("Error code %d: %s\n", error, desc);
     }
     bind.SetErrorCallback(error_callback);
