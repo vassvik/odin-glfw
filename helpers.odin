@@ -104,13 +104,14 @@ init_helper :: proc(resx := 1280, resy := 720, title := "Window title", version_
     return window;
 }
 
-init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32, share: Window_Handle = nil) -> Window_Handle {
+init_helper_map :: proc(resx := 1280, resy := 720, title := "Window title", swap_interval: int, window_attributes: map[Window_Attribute]i32, share: Window_Handle = nil, callback: proc"c"(error: i32, desc: cstring) = nil -> Window_Handle {
     //
     error_callback :: proc"c"(error: i32, desc: cstring) {
         context = runtime.default_context();
         fmt.printf("Error code %d: %s\n", error, desc);
     }
-    bind.SetErrorCallback(error_callback);
+    if callback == nil do bind.SetErrorCallback(error_callback);
+    else do bind.SetErrorCallback(callback);
 
     //
     if bind.Init() == bind.FALSE do return nil;
