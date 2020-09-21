@@ -399,6 +399,8 @@ using Cursor_Shape :: enum {
 	HAND_CURSOR = bindings.HAND_CURSOR,
 	HRESIZE_CURSOR = bindings.HRESIZE_CURSOR,
 	VRESIZE_CURSOR = bindings.VRESIZE_CURSOR,
+	RESIZE_NWSE_CURSOR = bindings.RESIZE_NWSE_CURSOR,
+	RESIZE_NESW_CURSOR = bindings.RESIZE_NESW_CURSOR,
 }
 
 using Joystick_State :: enum {
