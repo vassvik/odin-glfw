@@ -15,6 +15,7 @@ _TimingStruct :: struct {
     num_samples, counter: int,
 }
 persistent_timing_data := _TimingStruct{0.0, 0.0, 0.0, 1.0/60, 60, 0};
+last_measured_avg_frame_time: f64;
 
 calculate_frame_timings :: proc(window: Window_Handle) {
     using persistent_timing_data;
@@ -28,11 +29,13 @@ calculate_frame_timings :: proc(window: Window_Handle) {
 
     last_frame_time = dt;
 
-    if counter == num_samples {
-        avg_dt  /= f64(num_samples);
-        avg_dt2 /= f64(num_samples);
+    if counter == num_samples || avg_dt > 1.0 {
+        avg_dt  /= f64(counter);
+        avg_dt2 /= f64(counter);
         std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
-        ste_dt := std_dt/math.sqrt(f64(num_samples));
+        ste_dt := std_dt/math.sqrt(f64(counter));
+
+        last_measured_avg_frame_time = avg_dt;
 
         buf: [1024]u8;
         title := fmt.bprintf(buf[:], "frame timings: avg = %.3fms, std = %.3fms, ste = %.4fms. fps = %.1f\x00", 1e3*avg_dt, 1e3*std_dt, 1e3*ste_dt, 1.0/avg_dt);
@@ -57,11 +60,13 @@ calculate_frame_timings2 :: proc(window: Window_Handle, old_title: string) {
 
     last_frame_time = dt;
 
-    if counter == num_samples {
-        avg_dt  /= f64(num_samples);
-        avg_dt2 /= f64(num_samples);
+    if counter == num_samples || avg_dt > 1.0 {
+        avg_dt  /= f64(counter);
+        avg_dt2 /= f64(counter);
         //std_dt := math.sqrt(avg_dt2 - avg_dt*avg_dt);
         //ste_dt := std_dt/math.sqrt(f64(num_samples));
+
+        last_measured_avg_frame_time = avg_dt;
 
         buf: [1024]u8;
         title := fmt.bprintf(buf[:], "%s     fps = %.2f\x00", old_title, 1.0/avg_dt);
