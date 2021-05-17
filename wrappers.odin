@@ -198,7 +198,7 @@ get_key :: #force_inline proc(window: Window_Handle, key: Key) -> Key_State {
     return cast(Key_State)bind.GetKey(window, cast(i32)key); // NOTE: true == PRESS, false == RELEASE
 }
 
-get_key_name :: #force_inline proc(key, Key, scancode: int) -> string {
+get_key_name :: #force_inline proc(key: Key, scancode: int) -> string {
     return cast(string)bind.GetKeyName(cast(i32)key, cast(i32)scancode); // TODO: is this safe?
 }
 
