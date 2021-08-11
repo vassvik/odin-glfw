@@ -184,8 +184,8 @@ get_monitor_name :: #force_inline proc(monitor: Monitor_Handle) -> string {
     return cast(string)bind.GetMonitorName(monitor); // TODO: is this safe?
 }
 
-get_clipboard_string :: #force_inline proc(window: Window_Handle) -> string {
-    return cast(string)bind.GetClipboardString(window); // TODO: is this safe?
+get_clipboard_string :: #force_inline proc(window: Window_Handle) -> cstring {
+    return bind.GetClipboardString(window);
 }
 
 get_video_modes :: #force_inline proc(monitor: Monitor_Handle) -> []Vid_Mode {
@@ -378,8 +378,8 @@ get_gamepad_state :: #force_inline proc(jid: Joystick) -> (Gamepad_State, bool) 
     return state, ret;
 }
 
-set_clipboard_string :: #force_inline proc(window: Window_Handle, str: string) {
-    if len(str) > 0 do bind.SetClipboardString(window, strings.unsafe_string_to_cstring(str)); // TODO: is this safe? (string -> cstring)
+set_clipboard_string :: #force_inline proc(window: Window_Handle, str: cstring) {
+    bind.SetClipboardString(window, str);
 }
 
 get_time :: #force_inline proc() -> f64 {
