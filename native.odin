@@ -4,7 +4,7 @@ package glfw
 
 import "core:os"
 
-when os.OS == "windows" {
+when os.OS == .Windows {
 	import bind "bindings"
 
 	HWND :: rawptr;
