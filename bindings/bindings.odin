@@ -3,6 +3,7 @@ package glfw_bindings
 import "core:os"
 
 when os.OS == .Linux   do foreign import glfw "system:glfw"; // TODO: Add the billion-or-so static libs to link to in linux
+when os.OS == .Darwin  do foreign import glfw "system:glfw";
 when os.OS == .Windows do foreign import glfw { "../lib/glfw3.lib", "system:user32.lib", "system:gdi32.lib", "system:shell32.lib" };
 
 /*** Functions ***/
